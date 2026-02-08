@@ -1,0 +1,17 @@
+{
+  "name": "jsondeck",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n frontend,backend -c cyan,magenta \"npm:dev --workspace apps/frontend\" \"npm:dev --workspace apps/backend\"",
+    "build": "concurrently -n frontend,backend -c cyan,magenta \"npm:build --workspace apps/frontend\" \"npm:build --workspace apps/backend\"",
+    "lint": "concurrently -n frontend,backend -c cyan,magenta \"npm:lint --workspace apps/frontend\" \"npm:lint --workspace apps/backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

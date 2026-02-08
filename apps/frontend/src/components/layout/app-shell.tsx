@@ -1,0 +1,33 @@
+"use client";
+
+import { CommandPalette } from "@/components/layout/command-palette";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Topbar } from "@/components/layout/topbar";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative min-h-screen overflow-hidden text-slate-100">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(94,234,212,0.08),_transparent_55%)]" />
+      <div className="relative z-10 flex min-h-screen">
+        <Sidebar />
+        <div className="flex min-h-screen flex-1 flex-col">
+          <Topbar />
+          <motion.section
+            className={cn(
+              "glass relative m-4 flex-1 rounded-3xl border border-slate-800/80 p-6 shadow-2xl",
+              "before:pointer-events-none before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-slate-900/60 before:to-slate-950/40"
+            )}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <div className="relative z-10">{children}</div>
+          </motion.section>
+        </div>
+      </div>
+      <CommandPalette />
+    </div>
+  );
+}

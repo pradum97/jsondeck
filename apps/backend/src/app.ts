@@ -12,7 +12,14 @@ export const createApp = (): express.Express => {
   app.use(securityHeaders);
   app.use(cors);
   app.use(requestId);
-  app.use(express.json({ limit: "2mb" }));
+  app.use(
+    express.json({
+      limit: "2mb",
+      verify: (req, _res, buf) => {
+        req.rawBody = buf;
+      },
+    })
+  );
 
   app.use("/api", apiRouter);
 

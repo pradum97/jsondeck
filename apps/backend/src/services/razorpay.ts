@@ -23,4 +23,6 @@ export const getRazorpayClient = (): Razorpay => {
 
 export const getRazorpayKeyId = (): string => resolveEnv("RAZORPAY_KEY_ID");
 
+export const getRazorpayKeySecret = (): string => resolveEnv("RAZORPAY_KEY_SECRET");
+
 export const getRazorpayWebhookSecret = (): string => resolveEnv("RAZORPAY_WEBHOOK_SECRET");

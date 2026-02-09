@@ -8,8 +8,12 @@ const resolveRole = (subscription: {
   status?: string;
   currentPeriodEnd?: Date;
   seats?: number;
+  planCode?: string;
 } | null): Role => {
   if (!subscription) {
+    return "free";
+  }
+  if (subscription.planCode === "free") {
     return "free";
   }
   const status = subscription.status ?? "";

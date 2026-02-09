@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth";
+import { attachRole } from "../middleware/role-check";
 import {
   createConfigHandler,
   deleteConfigHandler,
@@ -9,7 +10,7 @@ import {
 
 export const configRouter = Router();
 
-configRouter.use(requireAuth);
+configRouter.use(requireAuth, attachRole);
 
 configRouter.get("/", getConfigHandler);
 configRouter.post("/", createConfigHandler);

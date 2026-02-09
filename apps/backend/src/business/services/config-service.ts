@@ -23,7 +23,14 @@ const ensureAccount = async (userId: string) => {
   return created.save();
 };
 
-export const getConfig = async (userId: string): Promise<ConfigResult> => {
+const resolveRole = (role?: string): string => {
+  if (role === "pro" || role === "team") {
+    return role;
+  }
+  return "free";
+};
+
+export const getConfig = async (userId: string, roleOverride?: string): Promise<ConfigResult> => {
   const account = await ensureAccount(userId);
   let preference = await AdPreferenceModel.findOne({ userId }).exec();
   if (!preference) {
@@ -34,34 +41,47 @@ export const getConfig = async (userId: string): Promise<ConfigResult> => {
     });
   }
 
+  const role = resolveRole(roleOverride ?? account.roles[0]);
+
   return {
-    role: account.roles[0] ?? "free",
-    adsEnabled: preference.adsEnabled,
+    role,
+    adsEnabled: role === "free" ? preference.adsEnabled : false,
     adProfile: preference.adProfile,
   };
 };
 
-export const createConfig = async (userId: string, input: ConfigInput): Promise<AdPreferenceDocument> => {
+export const createConfig = async (
+  userId: string,
+  input: ConfigInput,
+  roleOverride?: string
+): Promise<AdPreferenceDocument> => {
   const existing = await AdPreferenceModel.findOne({ userId }).exec();
   if (existing) {
     throw new AppError("Config already exists", 409);
   }
 
+  const role = resolveRole(roleOverride);
+
   const preference = new AdPreferenceModel({
     userId,
-    adsEnabled: input.adsEnabled ?? true,
+    adsEnabled: role === "free" ? input.adsEnabled ?? true : false,
     adProfile: input.adProfile ?? "default",
   });
   return preference.save();
 };
 
-export const updateConfig = async (userId: string, input: ConfigInput): Promise<AdPreferenceDocument> => {
+export const updateConfig = async (
+  userId: string,
+  input: ConfigInput,
+  roleOverride?: string
+): Promise<AdPreferenceDocument> => {
   const preference = await AdPreferenceModel.findOne({ userId }).exec();
   if (!preference) {
     throw new AppError("Config not found", 404);
   }
+  const role = resolveRole(roleOverride);
   if (input.adsEnabled !== undefined) {
-    preference.adsEnabled = input.adsEnabled;
+    preference.adsEnabled = role === "free" ? input.adsEnabled : false;
   }
   if (input.adProfile !== undefined) {
     preference.adProfile = input.adProfile;

@@ -5,8 +5,9 @@ import { env } from "../../config/env";
 import { AppError } from "../../middleware/error-handler";
 import { asyncHandler } from "../../utils/async-handler";
 import { ensureEmail, ensureString } from "../validation";
-import { authenticateUser, getUserById } from "../services/auth-session-service";
+import { authenticateUser, getOrCreateUserByEmail, getUserById } from "../services/auth-session-service";
 import { getActiveRefreshToken, revokeRefreshToken, rotateRefreshToken, storeRefreshToken } from "../services/refresh-token-service";
+import { requestOtpForEmail, verifyOtpForEmail } from "../services/otp-service";
 import { connectProviderHandler, getProfileHandler, upsertProfileHandler } from "./auth-controller";
 
 const REFRESH_COOKIE_NAME = "refresh_token";
@@ -139,6 +140,31 @@ export const refreshHandler = asyncHandler(async (req: Request, res: Response) =
   });
 
   res.status(200).json({ accessToken });
+});
+
+export const requestOtpHandler = asyncHandler(async (req: Request, res: Response) => {
+  const email = ensureEmail(req.body?.email, "email");
+  const { expiresAt } = await requestOtpForEmail(email);
+  res.status(200).json({ expiresAt });
+});
+
+export const verifyOtpHandler = asyncHandler(async (req: Request, res: Response) => {
+  const email = ensureEmail(req.body?.email, "email");
+  const otp = ensureString(req.body?.otp, "otp").replace(/\s+/g, "");
+  if (!/^\d{6}$/.test(otp)) {
+    throw new AppError("OTP must be 6 digits", 400);
+  }
+
+  await verifyOtpForEmail(email, otp);
+  const user = await getOrCreateUserByEmail(email);
+
+  res.status(200).json({
+    user: {
+      id: user.userId,
+      email: user.email,
+      roles: user.roles,
+    },
+  });
 });
 
 export { connectProviderHandler, getProfileHandler, upsertProfileHandler };

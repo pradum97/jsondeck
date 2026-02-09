@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -18,11 +19,19 @@ import { EditorOutput } from "@/components/editor/editor-output";
 import { EditorSnippets } from "@/components/editor/editor-snippets";
 import { EditorHistory } from "@/components/editor/editor-history";
 import { ResizableSplit } from "@/components/editor/resizable-split";
-import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "jsondeck.editor.tabs.v1";
 const REMOTE_TRANSFORM_THRESHOLD = 1200;
+
+const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full items-center justify-center rounded-2xl border border-slate-800/80 bg-slate-950/70 text-xs text-slate-500">
+      Loading editor...
+    </div>
+  ),
+});
 
 export function EditorPage() {
   const {
@@ -249,10 +258,19 @@ export function EditorPage() {
                 </div>
                 <div className="h-full">
                   <MonacoEditor
+                    height="100%"
+                    defaultLanguage="json"
+                    theme="vs-dark"
                     value={activeTab.content}
                     onChange={(nextValue) =>
-                      updateTabContent(activeTab.id, nextValue)
+                      updateTabContent(activeTab.id, nextValue ?? "")
                     }
+                    options={{
+                      minimap: { enabled: false },
+                      fontSize: 14,
+                      scrollBeyondLastLine: false,
+                      automaticLayout: true,
+                    }}
                   />
                 </div>
               </div>

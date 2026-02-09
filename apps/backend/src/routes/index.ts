@@ -11,7 +11,7 @@ import { transformRouter } from "./transform";
 export const apiRouter = Router();
 
 apiRouter.use(healthRouter);
-apiRouter.use(authRouter);
+apiRouter.use("/auth", authRouter);
 apiRouter.use(billingRouter);
 apiRouter.use("/config", configRouter);
 apiRouter.use(projectRouter);

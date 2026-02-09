@@ -12,7 +12,7 @@ export const requestTransform = async (
   input: string,
   operation: TransformOperation
 ): Promise<TransformServiceResult> => {
-  const response = await fetch(`${publicEnv.apiBaseUrl}/transform`, {
+  const response = await fetch(`${publicEnv.apiUrl}/transform`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ input, operation }),

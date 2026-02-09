@@ -1,11 +1,8 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 import { authOptions } from "@/lib/auth";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
-  apiVersion: "2023-10-16",
-});
+import { createBackendToken } from "@/lib/backend-auth";
+import { serverEnv } from "@/lib/server-env";
 
 const toPositiveInt = (value: unknown, fallback: number): number => {
   if (typeof value === "number" && Number.isInteger(value) && value > 0) {
@@ -23,10 +20,6 @@ const toPositiveInt = (value: unknown, fallback: number): number => {
 export const runtime = "nodejs";
 
 export const POST = async (request: Request): Promise<NextResponse> => {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return NextResponse.json({ error: "Stripe is not configured" }, { status: 500 });
-  }
-
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -40,6 +33,12 @@ export const POST = async (request: Request): Promise<NextResponse> => {
     cancelUrl?: string;
   };
 
+  const token = await createBackendToken({
+    subject: session.user.id,
+    email: session.user.email ?? undefined,
+    roles: session.user.role ? [session.user.role] : [],
+  });
+
   const planCode = body.planCode?.trim();
   if (!planCode) {
     return NextResponse.json({ error: "Missing planCode" }, { status: 400 });
@@ -48,40 +47,23 @@ export const POST = async (request: Request): Promise<NextResponse> => {
   const interval = body.interval === "year" ? "year" : "month";
   const seats = toPositiveInt(body.seats, 1);
 
-  const lookupKey = `${planCode}-${interval}`;
-  const prices = await stripe.prices.list({ lookup_keys: [lookupKey], active: true, limit: 1 });
-  const price = prices.data[0];
-  if (!price) {
-    return NextResponse.json({ error: "Plan price not found" }, { status: 404 });
-  }
-
-  const successUrl = body.successUrl ?? process.env.STRIPE_SUCCESS_URL;
-  const cancelUrl = body.cancelUrl ?? process.env.STRIPE_CANCEL_URL;
-  if (!successUrl || !cancelUrl) {
-    return NextResponse.json({ error: "Missing redirect URLs" }, { status: 400 });
-  }
-
-  const checkoutSession = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    line_items: [{ price: price.id, quantity: seats }],
-    customer_email: session.user.email ?? undefined,
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    subscription_data: {
-      metadata: {
-        planCode,
-        interval,
-        seats: String(seats),
-        userId: session.user.id,
-      },
+  const response = await fetch(`${serverEnv.backendBaseUrl}/billing/checkout`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-    metadata: {
+    body: JSON.stringify({
       planCode,
       interval,
-      seats: String(seats),
-      userId: session.user.id,
-    },
+      seats,
+    }),
   });
 
-  return NextResponse.json({ url: checkoutSession.url });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    return NextResponse.json({ error: payload?.error ?? "Checkout failed" }, { status: response.status });
+  }
+
+  return NextResponse.json(payload);
 };

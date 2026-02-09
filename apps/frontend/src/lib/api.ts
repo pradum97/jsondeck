@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { publicEnv } from "@/lib/public-env";
 
-const baseURL = publicEnv.apiBaseUrl;
+const baseURL = publicEnv.apiUrl;
 
 let accessToken: string | null = null;
 

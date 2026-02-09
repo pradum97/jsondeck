@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { createBackendToken } from "@/lib/backend-auth";
+import { serverEnv } from "@/lib/server-env";
 
 const resolveRole = (subscription: {
   status?: string;
@@ -28,10 +29,7 @@ const fetchSubscription = async (session: Awaited<ReturnType<typeof getServerSes
   if (!session?.user?.id) {
     return null;
   }
-  const baseUrl = process.env.BACKEND_BASE_URL;
-  if (!baseUrl) {
-    return null;
-  }
+  const baseUrl = serverEnv.backendBaseUrl;
 
   const token = await createBackendToken({
     subject: session.user.id,

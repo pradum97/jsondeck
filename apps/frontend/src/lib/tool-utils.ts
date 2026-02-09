@@ -60,30 +60,6 @@ export function generateUuid(): string {
     .join("-");
 }
 
-export function generateFakeProfile(seed: number) {
-  const firstNames = ["Avery", "Jordan", "Quinn", "Riley", "Emerson"];
-  const lastNames = ["Shaw", "Hughes", "Patel", "Reed", "Navarro"];
-  const domains = ["jsondeck.dev", "stackcraft.io", "nodewave.app"];
-  const roles = ["Platform Engineer", "API Architect", "Data Analyst", "DevOps Lead"];
-  const companies = ["Vertex Labs", "Nova Systems", "Cobalt Flow", "Pulse Grid"];
-  const random = mulberry32(seed);
-
-  const first = pick(firstNames, random);
-  const last = pick(lastNames, random);
-  const company = pick(companies, random);
-  const domain = pick(domains, random);
-  const role = pick(roles, random);
-  const handle = `${first}.${last}`.toLowerCase();
-
-  return {
-    id: generateUuid(),
-    name: `${first} ${last}`,
-    email: `${handle}@${domain}`,
-    company,
-    role,
-  };
-}
-
 export function deepMerge(left: JsonValue, right: JsonValue): JsonValue {
   if (Array.isArray(left) && Array.isArray(right)) {
     return [...left, ...right];
@@ -117,21 +93,6 @@ function bufferToHex(buffer: ArrayBuffer): string {
   return Array.from(new Uint8Array(buffer))
     .map((value) => value.toString(16).padStart(2, "0"))
     .join("");
-}
-
-function mulberry32(seed: number) {
-  let t = seed;
-  return () => {
-    t += 0x6d2b79f5;
-    let next = t;
-    next = Math.imul(next ^ (next >>> 15), next | 1);
-    next ^= next + Math.imul(next ^ (next >>> 7), next | 61);
-    return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function pick(values: string[], random: () => number) {
-  return values[Math.floor(random() * values.length)];
 }
 
 function isObject(value: JsonValue): value is Record<string, JsonValue> {

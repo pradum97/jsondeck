@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Base64Tool } from "@/components/tools/base64-tool";
-import { FakeDataTool } from "@/components/tools/fake-data-tool";
 import { HashTool } from "@/components/tools/hash-tool";
 import { JsonDiffTool } from "@/components/tools/json-diff-tool";
 import { JwtTool } from "@/components/tools/jwt-tool";
@@ -45,7 +44,6 @@ export function ToolsPage() {
         <UuidTool />
         <RegexTool />
         <HashTool />
-        <FakeDataTool />
         <JsonDiffTool />
         <TimestampTool />
       </div>

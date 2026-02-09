@@ -1,11 +1,17 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
+import { createHmac, timingSafeEqual } from "crypto";
 import Razorpay from "razorpay";
 import { requireAuth } from "../middleware/auth";
 import { AppError } from "../middleware/error-handler";
 import { logger } from "../config/logger";
 import { BillingPlanModel, type BillingInterval } from "../business/models/billing-plan";
-import { createSubscription } from "../business/services/billing-service";
-import { getRazorpayClient, getRazorpayKeyId, getRazorpayWebhookSecret } from "../services/razorpay";
+import { createSubscription, getActiveSubscription } from "../business/services/billing-service";
+import {
+  getRazorpayClient,
+  getRazorpayKeyId,
+  getRazorpayKeySecret,
+  getRazorpayWebhookSecret,
+} from "../services/razorpay";
 
 export const billingRouter = Router();
 
@@ -40,6 +46,27 @@ const parsePlanCode = (value: unknown): string => {
   return planCode;
 };
 
+const parseOrderId = (value: unknown): string => {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new AppError("Invalid order id", 400);
+  }
+  return value.trim();
+};
+
+const parsePaymentId = (value: unknown): string => {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new AppError("Invalid payment id", 400);
+  }
+  return value.trim();
+};
+
+const parseSignature = (value: unknown): string => {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    throw new AppError("Invalid payment signature", 400);
+  }
+  return value.trim();
+};
+
 const addInterval = (start: Date, interval: BillingInterval): Date => {
   const next = new Date(start);
   if (interval === "year") {
@@ -48,6 +75,16 @@ const addInterval = (start: Date, interval: BillingInterval): Date => {
     next.setMonth(next.getMonth() + 1);
   }
   return next;
+};
+
+const verifyPaymentSignature = (orderId: string, paymentId: string, signature: string): void => {
+  const payload = `${orderId}|${paymentId}`;
+  const expected = createHmac("sha256", getRazorpayKeySecret()).update(payload).digest("hex");
+  const expectedBuffer = Buffer.from(expected);
+  const signatureBuffer = Buffer.from(signature);
+  if (expectedBuffer.length !== signatureBuffer.length || !timingSafeEqual(expectedBuffer, signatureBuffer)) {
+    throw new AppError("Invalid Razorpay signature", 401);
+  }
 };
 
 billingRouter.post(
@@ -94,6 +131,68 @@ billingRouter.post(
         seats,
       });
     } catch (error) {
+      next(error);
+    }
+  }
+);
+
+billingRouter.post(
+  "/billing/verify",
+  requireAuth,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const orderId = parseOrderId(req.body?.orderId);
+      const paymentId = parsePaymentId(req.body?.paymentId);
+      const signature = parseSignature(req.body?.signature);
+
+      verifyPaymentSignature(orderId, paymentId, signature);
+
+      const razorpay = getRazorpayClient();
+      const order = await razorpay.orders.fetch(orderId);
+      const notes = order.notes ?? {};
+
+      const planCode = parsePlanCode(notes.planCode ?? req.body?.planCode);
+      const interval = parseInterval(notes.interval ?? req.body?.interval);
+      const seats = parseSeats(notes.seats ?? req.body?.seats);
+      const userId = typeof notes.userId === "string" && notes.userId ? notes.userId : req.auth?.subject ?? "";
+
+      if (!userId) {
+        throw new AppError("Missing userId for subscription update", 400);
+      }
+
+      const now = new Date();
+      const currentPeriodEnd = addInterval(now, interval);
+
+      await createSubscription({
+        userId,
+        planCode,
+        interval,
+        seats,
+        status: "active",
+        currentPeriodStart: now,
+        currentPeriodEnd,
+        cancelAtPeriodEnd: false,
+      });
+
+      res.status(200).json({ verified: true });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+billingRouter.get(
+  "/billing/subscriptions/current",
+  requireAuth,
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const subscription = await getActiveSubscription(req.auth?.subject ?? "");
+      res.status(200).json({ subscription });
+    } catch (error) {
+      if (error instanceof AppError && error.statusCode === 404) {
+        res.status(200).json({ subscription: null });
+        return;
+      }
       next(error);
     }
   }

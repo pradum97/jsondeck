@@ -8,6 +8,20 @@ const hashPassword = (password: string, salt: string): string => {
   return scryptSync(password, salt, PASSWORD_KEY_LENGTH).toString("hex");
 };
 
+const createUserRecord = async (email: string, password: string): Promise<UserDocument> => {
+  const salt = randomBytes(16).toString("hex");
+  const passwordHash = hashPassword(password, salt);
+  const user = new UserModel({
+    userId: randomBytes(16).toString("hex"),
+    email,
+    passwordHash,
+    passwordSalt: salt,
+    roles: ["free"],
+  });
+
+  return user.save();
+};
+
 export const authenticateUser = async (email: string, password: string): Promise<UserDocument> => {
   const user = await UserModel.findOne({ email }).exec();
   if (!user) {
@@ -37,15 +51,15 @@ export const createUser = async (email: string, password: string): Promise<UserD
     throw new AppError("User already exists", 409);
   }
 
-  const salt = randomBytes(16).toString("hex");
-  const passwordHash = hashPassword(password, salt);
-  const user = new UserModel({
-    userId: randomBytes(16).toString("hex"),
-    email,
-    passwordHash,
-    passwordSalt: salt,
-    roles: ["free"],
-  });
+  return createUserRecord(email, password);
+};
 
-  return user.save();
+export const getOrCreateUserByEmail = async (email: string): Promise<UserDocument> => {
+  const existing = await UserModel.findOne({ email }).exec();
+  if (existing) {
+    return existing;
+  }
+
+  const fallbackPassword = randomBytes(24).toString("hex");
+  return createUserRecord(email, fallbackPassword);
 };

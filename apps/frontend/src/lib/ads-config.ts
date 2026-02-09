@@ -1,3 +1,4 @@
+import axios from "axios";
 import { cookies } from "next/headers";
 import type { UserRole } from "@/lib/auth";
 
@@ -14,18 +15,16 @@ export const getAdsConfig = async (): Promise<AdsConfig> => {
     .map(({ name, value }) => `${name}=${value}`)
     .join("; ");
 
-  const response = await fetch(new URL("/api/config", baseUrl), {
-    headers: cookieHeader ? { cookie: cookieHeader } : {},
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
+  try {
+    const response = await axios.get<{ role?: UserRole; adsEnabled?: boolean }>(new URL("/api/config", baseUrl).toString(), {
+      headers: cookieHeader ? { cookie: cookieHeader } : {},
+    });
+    const data = response.data;
+    return {
+      role: data.role ?? "free",
+      adsEnabled: Boolean(data.adsEnabled),
+    };
+  } catch (error) {
     return { role: "free", adsEnabled: true };
   }
-
-  const data = (await response.json()) as { role?: UserRole; adsEnabled?: boolean };
-  return {
-    role: data.role ?? "free",
-    adsEnabled: Boolean(data.adsEnabled),
-  };
 };

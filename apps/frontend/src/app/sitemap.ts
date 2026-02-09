@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
+import { publicEnv } from "@/lib/public-env";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://jsondeck.dev";
+const baseUrl = publicEnv.siteUrl;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [

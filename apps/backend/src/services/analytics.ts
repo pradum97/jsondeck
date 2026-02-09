@@ -7,15 +7,14 @@ export type AnalyticsEvent = {
   timestamp?: string;
 };
 
-const ANALYTICS_ENDPOINT =
-  process.env.POSTHOG_HOST ?? "https://app.posthog.com";
+const ANALYTICS_ENDPOINT = process.env.POSTHOG_HOST;
 const POSTHOG_KEY = process.env.POSTHOG_API_KEY;
 const ANALYTICS_MODE = process.env.ANALYTICS_MODE ?? "posthog";
 
 const generateAnonId = () => crypto.randomUUID();
 
 const sendPostHogEvent = async (payload: AnalyticsEvent): Promise<void> => {
-  if (!POSTHOG_KEY) return;
+  if (!POSTHOG_KEY || !ANALYTICS_ENDPOINT) return;
   await fetch(`${ANALYTICS_ENDPOINT}/capture/`, {
     method: "POST",
     headers: {

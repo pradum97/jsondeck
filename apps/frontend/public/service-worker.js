@@ -1,16 +1,9 @@
-const CACHE_VERSION = "jsondeck-v1";
-const CORE_ASSETS = [
-  "/",
-  "/editor",
-  "/manifest.json",
-  "/favicon.svg",
-  "/manifest-icon.svg",
-  "/manifest-maskable.svg",
-];
+const CACHE_NAME = "jsondeck-static-v1";
+const OFFLINE_URLS = ["/", "/editor"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(OFFLINE_URLS))
   );
   self.skipWaiting();
 });
@@ -21,7 +14,9 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.map((key) => (key === CACHE_VERSION ? null : caches.delete(key)))
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
         )
       )
   );
@@ -29,19 +24,28 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  const { request } = event;
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+  if (request.method !== "GET") return;
 
-      return fetch(event.request)
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
         .then((response) => {
-          const cloned = response.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, cloned));
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
           return response;
         })
-        .catch(() => caches.match("/editor"));
-    })
-  );
+        .catch(() =>
+          caches.match(request).then((cached) => cached || caches.match("/editor"))
+        )
+    );
+    return;
+  }
+
+  if (request.url.startsWith(self.location.origin)) {
+    event.respondWith(
+      caches.match(request).then((cached) => cached || fetch(request))
+    );
+  }
 });

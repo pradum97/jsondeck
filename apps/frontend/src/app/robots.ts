@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { publicEnv } from "@/lib/public-env";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://jsondeck.dev/sitemap.xml",
+    sitemap: `${publicEnv.siteUrl}/sitemap.xml`,
   };
 }

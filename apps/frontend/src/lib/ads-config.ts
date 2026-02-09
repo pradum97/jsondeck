@@ -1,6 +1,7 @@
 import axios from "axios";
 import { cookies } from "next/headers";
 import type { UserRole } from "@/lib/auth";
+import { serverEnv } from "@/lib/server-env";
 
 export interface AdsConfig {
   role: UserRole;
@@ -8,7 +9,7 @@ export interface AdsConfig {
 }
 
 export const getAdsConfig = async (): Promise<AdsConfig> => {
-  const baseUrl = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:4000";
+  const baseUrl = serverEnv.nextAuthUrl;
   const cookieStore = cookies();
   const cookieHeader = cookieStore
     .getAll()

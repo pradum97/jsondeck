@@ -1,9 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
+import { publicEnv } from "@/lib/public-env";
 
-const baseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  process.env.NEXT_PUBLIC_API_BASE ||
-  "http://localhost:4000";
+const baseURL = publicEnv.apiBaseUrl;
 
 let accessToken: string | null = null;
 

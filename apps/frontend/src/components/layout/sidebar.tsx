@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { publicEnv } from "@/lib/public-env";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -29,7 +30,7 @@ export function Sidebar() {
           <span className="text-xs uppercase tracking-[0.3em] text-emerald-300/80">
             JSONDeck
           </span>
-          <span className="text-sm text-slate-400">jsondeck.dev</span>
+          <span className="text-sm text-slate-400">{publicEnv.siteLabel}</span>
         </div>
         <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-emerald-200">
           Pro

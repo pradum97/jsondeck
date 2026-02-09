@@ -9,6 +9,7 @@ import {
   minifyJson,
   validateJson,
 } from "@/lib/json-tools";
+import { requestTransform, type TransformOperation } from "@/lib/transform-service";
 import { useEditorStore } from "@/store/editor-store";
 import { EditorTabs } from "@/components/editor/editor-tabs";
 import { EditorToolbar } from "@/components/editor/editor-toolbar";
@@ -20,6 +21,7 @@ import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "jsondeck.editor.tabs.v1";
+const REMOTE_TRANSFORM_THRESHOLD = 1200;
 
 export function EditorPage() {
   const {
@@ -48,43 +50,76 @@ export function EditorPage() {
     [activeTab.content, formattedPreview.value]
   );
 
-  const handleFormat = () => {
-    const result = formatJson(activeTab.content);
-    setDiagnostics(result.diagnostic);
-    setOutput(result.value);
-    if (result.diagnostic.status === "valid") {
-      updateTabContent(activeTab.id, result.value);
+  const runTransform = async (operation: TransformOperation) => {
+    const runLocalTransform = () => {
+      if (operation === "validate") {
+        const result = validateJson(activeTab.content);
+        setDiagnostics(result);
+        return { status: result.status, value: "", message: result.message };
+      }
+      const result =
+        operation === "minify"
+          ? minifyJson(activeTab.content)
+          : formatJson(activeTab.content);
+      setDiagnostics(result.diagnostic);
+      setOutput(result.value);
+      if (result.diagnostic.status === "valid") {
+        updateTabContent(activeTab.id, result.value);
+      }
+      return {
+        status: result.diagnostic.status,
+        value: result.value,
+        message: result.diagnostic.message,
+      };
+    };
+
+    if (activeTab.content.length < REMOTE_TRANSFORM_THRESHOLD) {
+      return runLocalTransform();
     }
+
+    try {
+      const remote = await requestTransform(activeTab.content, operation);
+      const diagnostics = {
+        status: remote.status === "valid" ? "valid" : "error",
+        message: remote.message,
+      };
+      setDiagnostics(diagnostics);
+      setOutput(remote.output);
+      if (remote.status === "valid" && operation !== "validate") {
+        updateTabContent(activeTab.id, remote.output);
+      }
+      return { status: diagnostics.status, value: remote.output, message: remote.message };
+    } catch {
+      return runLocalTransform();
+    }
+  };
+
+  const handleFormat = async () => {
+    const result = await runTransform("format");
     addHistory({
       action: "Format",
       timestamp: new Date().toLocaleTimeString(),
       summary:
-        result.diagnostic.status === "valid"
+        result.status === "valid"
           ? "Formatted JSON successfully."
           : "Formatting failed due to invalid JSON.",
     });
   };
 
-  const handleMinify = () => {
-    const result = minifyJson(activeTab.content);
-    setDiagnostics(result.diagnostic);
-    setOutput(result.value);
-    if (result.diagnostic.status === "valid") {
-      updateTabContent(activeTab.id, result.value);
-    }
+  const handleMinify = async () => {
+    const result = await runTransform("minify");
     addHistory({
       action: "Minify",
       timestamp: new Date().toLocaleTimeString(),
       summary:
-        result.diagnostic.status === "valid"
+        result.status === "valid"
           ? "Minified JSON successfully."
           : "Minify failed due to invalid JSON.",
     });
   };
 
-  const handleValidate = () => {
-    const result = validateJson(activeTab.content);
-    setDiagnostics(result);
+  const handleValidate = async () => {
+    const result = await runTransform("validate");
     addHistory({
       action: "Validate",
       timestamp: new Date().toLocaleTimeString(),

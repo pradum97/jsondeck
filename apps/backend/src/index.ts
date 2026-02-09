@@ -3,12 +3,17 @@ import { createApp } from "./app";
 import { connectDatabase, disconnectDatabase } from "./config/db";
 import { env } from "./config/env";
 import { logger } from "./config/logger";
+import { scheduleCleanup, cleanupWorker, transformWorker } from "./jobs";
 
 const startServer = async (): Promise<void> => {
   await connectDatabase();
 
   const app = createApp();
   const server = createServer(app);
+
+  void cleanupWorker;
+  void transformWorker;
+  await scheduleCleanup();
 
   server.listen(env.port, () => {
     logger.info("JSONDeck API server listening", { port: env.port });

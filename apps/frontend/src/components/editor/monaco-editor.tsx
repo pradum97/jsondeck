@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { publicEnv } from "@/lib/public-env";
 
 type MonacoEditorOptions = {
   value: string;
@@ -47,8 +48,7 @@ type MonacoEditorProps = {
   onChange: (value: string) => void;
 };
 
-const MONACO_CDN =
-  "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min";
+const MONACO_CDN = publicEnv.monacoCdn;
 
 let monacoPromise: Promise<Monaco> | null = null;
 

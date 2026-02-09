@@ -18,3 +18,29 @@ export const validate = <T>(schema: Schema<T>) => {
     }
   };
 };
+
+const BODY_METHODS = new Set(["POST", "PUT", "PATCH"]);
+
+export const validationMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
+  if (!BODY_METHODS.has(req.method)) {
+    next();
+    return;
+  }
+
+  const contentType = req.headers["content-type"] ?? "";
+  if (!contentType.toString().includes("application/json")) {
+    next();
+    return;
+  }
+
+  if (req.body === null || Array.isArray(req.body) || typeof req.body !== "object") {
+    res.status(400).json({ message: "Request body must be a JSON object" });
+    return;
+  }
+
+  next();
+};

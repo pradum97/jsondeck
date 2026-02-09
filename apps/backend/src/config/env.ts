@@ -8,6 +8,10 @@ export interface EnvConfig {
   jwtIssuer: string;
   jwtAudience: string;
   corsOrigins: string[];
+  redisHost: string;
+  redisPort: number;
+  redisPassword?: string;
+  redisTls: boolean;
   logLevel: "debug" | "info" | "warn" | "error";
 }
 
@@ -36,13 +40,19 @@ const parseNodeEnv = (value: string | undefined): NodeEnv => {
 };
 
 const parseCorsOrigins = (value: string | undefined): string[] => {
-  if (!value) {
-    return ["http://localhost:4000"];
-  }
+  if (!value) return [];
   return value
     .split(",")
     .map((origin) => origin.trim())
     .filter((origin) => origin.length > 0);
+};
+
+const parseRedisPort = (value: string | undefined): number => {
+  const port = Number(value);
+  if (!Number.isInteger(port) || port <= 0) {
+    throw new Error("REDIS_PORT must be a positive integer");
+  }
+  return port;
 };
 
 const parseLogLevel = (value: string | undefined): EnvConfig["logLevel"] => {
@@ -61,5 +71,9 @@ export const env: EnvConfig = {
   jwtIssuer: requireValue("JWT_ISSUER"),
   jwtAudience: requireValue("JWT_AUDIENCE"),
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGINS),
+  redisHost: requireValue("REDIS_HOST"),
+  redisPort: parseRedisPort(process.env.REDIS_PORT),
+  redisPassword: process.env.REDIS_PASSWORD,
+  redisTls: process.env.REDIS_TLS === "true",
   logLevel: parseLogLevel(process.env.LOG_LEVEL),
 };

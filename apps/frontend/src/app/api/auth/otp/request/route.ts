@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server";
+import { serverEnv } from "@/lib/server-env";
 
 export const runtime = "nodejs";
 
-const backendBaseUrl =
-  process.env.BACKEND_BASE_URL ||
-  process.env.BACKEND_URL ||
-  process.env.NEXT_PRIVATE_BACKEND_URL ||
-  "http://localhost:6000/api";
+const backendBaseUrl = serverEnv.backendBaseUrl;
 
 export const POST = async (req: Request): Promise<NextResponse> => {
   const body = (await req.json()) as { email?: string };

@@ -1,10 +1,11 @@
 import Redis from "ioredis";
+import { env } from "../config/env";
 
 const redis = new Redis({
-  host: process.env.REDIS_HOST ?? "127.0.0.1",
-  port: Number(process.env.REDIS_PORT ?? 6379),
-  password: process.env.REDIS_PASSWORD,
-  tls: process.env.REDIS_TLS === "true" ? {} : undefined,
+  host: env.redisHost,
+  port: env.redisPort,
+  password: env.redisPassword,
+  tls: env.redisTls ? {} : undefined,
   maxRetriesPerRequest: 3,
   enableReadyCheck: true,
 });

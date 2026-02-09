@@ -8,7 +8,11 @@ services:
     ports:
       - "4000:4000"
     environment:
-      - NEXT_PUBLIC_SITE_URL=https://jsondeck.dev
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+      - NEXT_PUBLIC_MONACO_CDN=${NEXT_PUBLIC_MONACO_CDN}
+      - NEXT_PUBLIC_SITE_LABEL=${NEXT_PUBLIC_SITE_LABEL}
     depends_on:
       - backend
     restart: unless-stopped
@@ -20,14 +24,28 @@ services:
     ports:
       - "6000:6000"
     environment:
-      - NODE_ENV=production
-      - PORT=6000
-      - MONGODB_URI=mongodb://mongo:27017/jsondeck
-      - JWT_SECRET=change-me
-      - JWT_ISSUER=jsondeck.dev
-      - JWT_AUDIENCE=jsondeck
-      - CORS_ORIGINS=http://localhost:4000
-      - LOG_LEVEL=info
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_TLS=${REDIS_TLS}
+      - UPLOAD_DIR=${UPLOAD_DIR}
+      - UPLOAD_MAX_SIZE=${UPLOAD_MAX_SIZE}
+      - UPLOAD_ALLOWED_TYPES=${UPLOAD_ALLOWED_TYPES}
+      - TRANSFORM_CACHE_TTL=${TRANSFORM_CACHE_TTL}
+      - CONFIG_CACHE_TTL=${CONFIG_CACHE_TTL}
+      - SHARE_CACHE_TTL=${SHARE_CACHE_TTL}
+      - POSTHOG_HOST=${POSTHOG_HOST}
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+      - ANALYTICS_MODE=${ANALYTICS_MODE}
+      - ANALYTICS_WEBHOOK_URL=${ANALYTICS_WEBHOOK_URL}
     depends_on:
       - mongo
       - redis

@@ -2,14 +2,12 @@
 
 import axios from "axios";
 import { cookies } from "next/headers";
+import { serverEnv } from "@/lib/server-env";
 
 const ACCESS_COOKIE_NAME = "access_token";
 const REFRESH_COOKIE_NAME = "refresh_token";
 
-const baseUrl =
-  process.env.BACKEND_URL ||
-  process.env.NEXT_PRIVATE_BACKEND_URL ||
-  "http://localhost:4000";
+const baseUrl = serverEnv.backendBaseUrl;
 
 type LoginResult = {
   ok: boolean;
@@ -37,7 +35,7 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
   const password = String(formData.get("password") || "");
 
   try {
-    const response = await axios.post<LoginResponse>(`${baseUrl}/api/auth/login`, { email, password });
+    const response = await axios.post<LoginResponse>(`${baseUrl}/auth/login`, { email, password });
     const data = response.data;
     const setCookieHeaderValue = response.headers["set-cookie"] ?? [];
     const setCookieHeader = Array.isArray(setCookieHeaderValue) ? setCookieHeaderValue : [setCookieHeaderValue];
@@ -76,7 +74,7 @@ export async function loginAction(formData: FormData): Promise<LoginResult> {
 }
 
 export async function logoutAction(): Promise<void> {
-  await axios.post(`${baseUrl}/api/auth/logout`);
+  await axios.post(`${baseUrl}/auth/logout`);
 
   cookies().delete(ACCESS_COOKIE_NAME);
   cookies().delete(REFRESH_COOKIE_NAME);

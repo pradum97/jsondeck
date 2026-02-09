@@ -7,7 +7,6 @@ export const connectDatabase = async (): Promise<void> => {
 
   try {
     await mongoose.connect(env.mongodbUri, {
-      dbName: "jsondeck",
       minPoolSize: 2,
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 10000,

@@ -3,14 +3,11 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { createBackendToken } from "@/lib/backend-auth";
+import { serverEnv } from "@/lib/server-env";
 
 export type UserRole = "free" | "pro" | "team";
 
-const backendBaseUrl =
-  process.env.BACKEND_BASE_URL ||
-  process.env.BACKEND_URL ||
-  process.env.NEXT_PRIVATE_BACKEND_URL ||
-  "http://localhost:6000/api";
+const backendBaseUrl = serverEnv.backendBaseUrl;
 
 const syncAccountProfile = async ({
   subject,

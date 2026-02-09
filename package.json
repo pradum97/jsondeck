@@ -9,9 +9,28 @@
   "scripts": {
     "dev": "concurrently -n frontend,backend -c cyan,magenta \"npm:dev --workspace apps/frontend\" \"npm:dev --workspace apps/backend\"",
     "build": "concurrently -n frontend,backend -c cyan,magenta \"npm:build --workspace apps/frontend\" \"npm:build --workspace apps/backend\"",
-    "lint": "concurrently -n frontend,backend -c cyan,magenta \"npm:lint --workspace apps/frontend\" \"npm:lint --workspace apps/backend\""
+    "build:all": "npm run build",
+    "lint": "concurrently -n frontend,backend -c cyan,magenta \"npm:lint --workspace apps/frontend\" \"npm:lint --workspace apps/backend\"",
+    "typecheck": "concurrently -n frontend,backend -c cyan,magenta \"npm:typecheck --workspace apps/frontend\" \"npm:typecheck --workspace apps/backend\"",
+    "depcheck": "concurrently -n frontend,backend -c cyan,magenta \"npm:depcheck --workspace apps/frontend\" \"npm:depcheck --workspace apps/backend\"",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "concurrently": "^8.2.2",
+    "depcheck": "^1.4.7",
+    "eslint": "^9.15.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.3.0",
+    "typescript": "^5.6.3"
+  },
+  "lint-staged": {
+    "apps/backend/**/*.{ts,tsx,js,jsx}": [
+      "npm run lint --workspace apps/backend"
+    ],
+    "apps/frontend/**/*.{ts,tsx,js,jsx}": [
+      "npm run lint --workspace apps/frontend"
+    ]
   }
 }

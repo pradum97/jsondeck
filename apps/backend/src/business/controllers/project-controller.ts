@@ -12,7 +12,7 @@ export const createProjectHandler = asyncHandler(async (req: Request, res: Respo
 });
 
 export const listProjectsHandler = asyncHandler(async (req: Request, res: Response) => {
-  const workspaceId = ensureString(req.params.workspaceId, "workspaceId");
+  const workspaceId = ensureString(req.query.workspaceId, "workspaceId");
   const projects = await listProjects(workspaceId, req.auth?.subject ?? "");
   res.status(200).json({ projects });
 });

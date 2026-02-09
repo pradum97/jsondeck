@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createBackendToken } from "@/lib/backend-auth";
@@ -40,13 +41,9 @@ const syncSubscription = async (subscription: Stripe.Subscription): Promise<void
     return;
   }
 
-  await fetch(`${baseUrl}/billing/subscriptions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
+  await axios.post(
+    `${baseUrl}/billing/subscriptions`,
+    {
       planCode,
       interval,
       seats: Number.isFinite(seats) && seats > 0 ? seats : 1,
@@ -54,8 +51,13 @@ const syncSubscription = async (subscription: Stripe.Subscription): Promise<void
       currentPeriodStart,
       currentPeriodEnd,
       cancelAtPeriodEnd: subscription.cancel_at_period_end,
-    }),
-  });
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const runtime = "nodejs";

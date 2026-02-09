@@ -7,7 +7,10 @@ import morgan from "morgan";
 import { errorHandler } from "./middlewares/error-handler";
 import { rateLimiter } from "./middlewares/rate-limit";
 import { validationMiddleware } from "./middlewares/validate";
-import { apiRouter } from "./routes";
+import { authRouter } from "./routes/auth";
+import { configRouter } from "./routes/config";
+import { documentsRouter } from "./routes/documents";
+import { projectsRouter } from "./routes/projects";
 import { connectToDatabase, registerDatabaseShutdown } from "./utils/db";
 
 dotenv.config();
@@ -25,7 +28,10 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.use(apiRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/projects", projectsRouter);
+app.use("/api/documents", documentsRouter);
+app.use("/api/config", configRouter);
 
 app.use(errorHandler);
 

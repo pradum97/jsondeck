@@ -7,6 +7,14 @@ export const ensureString = (value: unknown, field: string): string => {
   return value.trim();
 };
 
+export const ensureEmail = (value: unknown, field: string): string => {
+  const email = ensureString(value, field);
+  if (!email.includes("@")) {
+    throw new AppError(`${field} must be a valid email`, 400);
+  }
+  return email.toLowerCase();
+};
+
 export const ensureOptionalString = (value: unknown): string | undefined => {
   if (value === undefined || value === null || value === "") {
     return undefined;

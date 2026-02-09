@@ -1,3 +1,4 @@
+import axios from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
@@ -38,19 +39,19 @@ const fetchSubscription = async (session: Awaited<ReturnType<typeof getServerSes
     roles: session.user.role ? [session.user.role] : [],
   });
 
-  const response = await fetch(`${baseUrl}/billing/subscriptions/current`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
+  try {
+    const response = await axios.get<{ subscription?: { status?: string; currentPeriodEnd?: string; seats?: number } }>(
+      `${baseUrl}/billing/subscriptions/current`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.subscription ?? null;
+  } catch (error) {
     return null;
   }
-
-  const data = (await response.json()) as { subscription?: { status?: string; currentPeriodEnd?: string; seats?: number } };
-  return data.subscription ?? null;
 };
 
 export const runtime = "nodejs";

@@ -16,6 +16,11 @@ const api: AxiosInstance = axios.create({
   withCredentials: true
 });
 
+const refreshClient = axios.create({
+  baseURL,
+  withCredentials: true,
+});
+
 api.interceptors.request.use((config) => {
   if (accessToken) {
     config.headers = config.headers ?? {};
@@ -64,23 +69,8 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const refreshResponse = await fetch("/api/auth/refresh", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (!refreshResponse.ok) {
-        setAccessToken(null);
-        processQueue(null);
-        return Promise.reject(error);
-      }
-
-      const refreshData = (await refreshResponse.json()) as {
-        accessToken: string;
-      };
+      const refreshResponse = await refreshClient.post<{ accessToken: string }>("/api/auth/refresh");
+      const refreshData = refreshResponse.data;
 
       setAccessToken(refreshData.accessToken);
       processQueue(refreshData.accessToken);

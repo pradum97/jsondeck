@@ -37,3 +37,12 @@ export const rotateRefreshToken = async (
   await existing.save();
   await storeRefreshToken(existing.userId, newToken, newExpiresAt);
 };
+
+export const revokeRefreshToken = async (token: string): Promise<void> => {
+  const existing = await RefreshTokenModel.findOne({ token }).exec();
+  if (!existing) {
+    return;
+  }
+  existing.revokedAt = new Date();
+  await existing.save();
+};

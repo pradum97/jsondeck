@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { href: "/editor", label: "Editor" },
@@ -43,13 +44,9 @@ export function Navbar() {
           </Link>
         ))}
       </div>
-      <button
-        type="button"
-        onClick={handleToggle}
-        className="glass rounded-full border border-slate-700/80 px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-200 transition hover:border-emerald-400/60 hover:text-emerald-200"
-      >
+      <Button type="button" variant="ghost" size="sm" onClick={handleToggle}>
         {mounted && theme === "light" ? "Dark" : "Light"} Mode
-      </button>
+      </Button>
     </nav>
   );
 }

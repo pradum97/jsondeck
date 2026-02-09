@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { CommandPalette } from "@/components/layout/command-palette";
+import { Navbar } from "@/components/layout/navbar";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="relative z-10 flex min-h-screen">
         <Sidebar />
         <div className="flex min-h-screen flex-1 flex-col">
+          <Navbar />
           <Topbar />
           <motion.section
             className={cn(

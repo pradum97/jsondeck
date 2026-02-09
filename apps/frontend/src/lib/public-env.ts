@@ -8,7 +8,7 @@ const requirePublicEnv = (key: string): string => {
 
 export const publicEnv = {
   siteUrl: requirePublicEnv("NEXT_PUBLIC_SITE_URL"),
-  apiBaseUrl: requirePublicEnv("NEXT_PUBLIC_API_BASE_URL"),
+  apiUrl: requirePublicEnv("NEXT_PUBLIC_API_URL"),
   appUrl: requirePublicEnv("NEXT_PUBLIC_APP_URL"),
   monacoCdn: requirePublicEnv("NEXT_PUBLIC_MONACO_CDN"),
   siteLabel: requirePublicEnv("NEXT_PUBLIC_SITE_LABEL"),

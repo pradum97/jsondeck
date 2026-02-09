@@ -21,6 +21,11 @@ interface RefreshTokenClaims extends jwt.JwtPayload {
 }
 
 const getCookie = (req: Request, name: string): string | null => {
+  const cookieStore = (req as Request & { cookies?: Record<string, string> }).cookies;
+  if (cookieStore?.[name]) {
+    return cookieStore[name];
+  }
+
   const cookieHeader = req.headers.cookie;
   if (!cookieHeader) {
     return null;

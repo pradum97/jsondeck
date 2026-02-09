@@ -1,8 +1,10 @@
 "use client";
 
+import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState, useTransition, type FormEvent } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
@@ -11,6 +13,19 @@ export default function LoginPage() {
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const sendOtpMutation = useMutation({
+    mutationFn: async (value: string) => {
+      const response = await axios.post(
+        "/api/auth/otp/request",
+        { email: value },
+        { validateStatus: () => true }
+      );
+      if (response.status >= 400) {
+        throw new Error("Unable to send OTP.");
+      }
+      return response.data as { ok?: boolean };
+    },
+  });
 
   const handleSendOtp = async () => {
     setMessage(null);
@@ -19,15 +34,7 @@ export default function LoginPage() {
       return;
     }
     try {
-      const response = await fetch("/api/auth/otp/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      if (!response.ok) {
-        setMessage("Unable to send OTP. Please try again.");
-        return;
-      }
+      await sendOtpMutation.mutateAsync(email);
       setMessage("OTP sent. Check your inbox for the 6-digit code.");
     } catch {
       setMessage("Unable to send OTP. Please try again.");

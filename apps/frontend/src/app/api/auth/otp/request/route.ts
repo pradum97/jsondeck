@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NextResponse } from "next/server";
 import { serverEnv } from "@/lib/server-env";
 
@@ -13,17 +14,20 @@ export const POST = async (req: Request): Promise<NextResponse> => {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
 
-  const response = await fetch(`${backendBaseUrl}/auth/otp/request`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
+  const response = await axios.post(
+    `${backendBaseUrl}/auth/otp/request`,
+    { email },
+    {
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true,
+    }
+  );
 
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
-    return NextResponse.json({ error: errorBody.error ?? "Unable to send OTP" }, { status: response.status });
+  if (response.status >= 400) {
+    const errorBody = response.data as { error?: string } | undefined;
+    return NextResponse.json({ error: errorBody?.error ?? "Unable to send OTP" }, { status: response.status });
   }
 
-  const data = await response.json();
+  const data = response.data as { expiresAt?: string };
   return NextResponse.json({ ok: true, expiresAt: data.expiresAt });
 };

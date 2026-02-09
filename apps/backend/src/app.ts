@@ -2,7 +2,13 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
-import { apiRouter } from "./routes";
+import { authRouter } from "./routes/auth";
+import { billingRouter } from "./routes/billing";
+import { configRouter } from "./routes/config";
+import { documentsRouter } from "./routes/documents";
+import { projectsRouter } from "./routes/projects";
+import { transformRouter } from "./routes/transform";
+import { uploadRouter } from "./routes/upload";
 import { env } from "./config/env";
 import { errorHandler } from "./middleware/error-handler";
 import { notFound } from "./middleware/not-found";
@@ -46,7 +52,21 @@ export const createApp = (): express.Express => {
   );
   app.use(validationMiddleware);
 
-  app.use("/api", apiRouter);
+  app.get("/health", (_req, res) => {
+    res.status(200).json({
+      status: "ok",
+      env: env.nodeEnv,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  app.use("/api/auth", authRouter);
+  app.use("/api/projects", projectsRouter);
+  app.use("/api/documents", documentsRouter);
+  app.use("/api/config", configRouter);
+  app.use("/api", billingRouter);
+  app.use("/api", uploadRouter);
+  app.use("/api", transformRouter);
 
   app.use(notFound);
   app.use(errorHandler);

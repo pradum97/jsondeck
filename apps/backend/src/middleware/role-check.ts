@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { SubscriptionModel } from "../business/models/subscription";
 import { AppError } from "./error-handler";
 
-type Role = "free" | "pro" | "team";
+export type Role = "free" | "pro" | "team";
 
 const resolveRole = (subscription: {
   status?: string;
@@ -51,4 +51,21 @@ export const attachRole = async (req: Request, _res: Response, next: NextFunctio
   } catch (error) {
     next(error as Error);
   }
+};
+
+export const requireRole = (allowedRoles: Role[]) => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    const roles = new Set<string>(req.auth?.roles ?? []);
+    const attachedRole = (req as Request & { role?: Role }).role;
+    if (attachedRole) {
+      roles.add(attachedRole);
+    }
+
+    const hasAccess = allowedRoles.some((role) => roles.has(role));
+    if (!hasAccess) {
+      next(new AppError("Insufficient role", 403));
+      return;
+    }
+    next();
+  };
 };

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth";
+import { attachRole, requireRole } from "../middleware/role-check";
 import {
   createDocumentHandler,
   deleteDocumentHandler,
@@ -10,7 +11,7 @@ import {
 
 export const documentsRouter = Router();
 
-documentsRouter.use(requireAuth);
+documentsRouter.use(requireAuth, attachRole, requireRole(["free", "pro", "team"]));
 
 documentsRouter.post("/", createDocumentHandler);
 documentsRouter.get("/", listDocumentsHandler);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { ResizableSplit } from "@/components/editor/resizable-split";
@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import {
   TRANSFORM_TARGETS,
   TransformTarget,
-  transformJson,
+  type TransformResult,
 } from "@/lib/transformers";
 
 const DEFAULT_INPUT = "";
@@ -17,8 +17,31 @@ export function TransformPage() {
   const [input, setInput] = useState(DEFAULT_INPUT);
   const [target, setTarget] = useState<TransformTarget>("TypeScript");
   const [copied, setCopied] = useState(false);
+  const [result, setResult] = useState<TransformResult>({
+    output: "",
+    status: "error",
+    message: "Paste JSON to generate output.",
+  });
+  const workerRef = useRef<Worker | null>(null);
 
-  const result = useMemo(() => transformJson(input, target), [input, target]);
+  useEffect(() => {
+    const worker = new Worker(
+      new URL("@/workers/transform.worker.ts", import.meta.url)
+    );
+    worker.onmessage = (event: MessageEvent<TransformResult>) => {
+      setResult(event.data);
+    };
+    workerRef.current = worker;
+    return () => {
+      worker.terminate();
+      workerRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!workerRef.current) return;
+    workerRef.current.postMessage({ input, target });
+  }, [input, target]);
 
   const handleCopy = async () => {
     if (!result.output) return;

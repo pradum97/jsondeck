@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth";
+import { attachRole, requireRole } from "../middleware/role-check";
 import {
   createProjectHandler,
   deleteProjectHandler,
@@ -10,7 +11,7 @@ import {
 
 export const projectsRouter = Router();
 
-projectsRouter.use(requireAuth);
+projectsRouter.use(requireAuth, attachRole, requireRole(["free", "pro", "team"]));
 
 projectsRouter.post("/", createProjectHandler);
 projectsRouter.get("/", listProjectsHandler);

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NextResponse } from "next/server";
 import { serverEnv } from "@/lib/server-env";
 
@@ -10,20 +11,23 @@ export const POST = async (request: Request): Promise<NextResponse> => {
   }
 
   const payload = await request.text();
-  const response = await fetch(`${serverEnv.backendBaseUrl}/billing/webhook`, {
-    method: "POST",
-    headers: {
-      "Content-Type": request.headers.get("content-type") ?? "application/json",
-      "x-razorpay-signature": signature,
-    },
-    body: payload,
-  });
+  const response = await axios.post(
+    `${serverEnv.backendBaseUrl}/billing/webhook`,
+    payload,
+    {
+      headers: {
+        "Content-Type": request.headers.get("content-type") ?? "application/json",
+        "x-razorpay-signature": signature,
+      },
+      validateStatus: () => true,
+      responseType: "text",
+    }
+  );
 
-  const body = await response.text();
-  return new NextResponse(body, {
+  return new NextResponse(response.data, {
     status: response.status,
     headers: {
-      "Content-Type": response.headers.get("content-type") ?? "application/json",
+      "Content-Type": response.headers["content-type"] ?? "application/json",
     },
   });
 };

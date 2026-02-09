@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useMutation } from "@tanstack/react-query";
 import {
   buildLineDiff,
   formatJson,
@@ -49,6 +50,10 @@ export function EditorPage() {
     () => buildLineDiff(activeTab.content, formattedPreview.value),
     [activeTab.content, formattedPreview.value]
   );
+  const transformMutation = useMutation({
+    mutationFn: async (payload: { input: string; operation: TransformOperation }) =>
+      requestTransform(payload.input, payload.operation),
+  });
 
   const runTransform = async (operation: TransformOperation) => {
     const runLocalTransform = () => {
@@ -78,7 +83,10 @@ export function EditorPage() {
     }
 
     try {
-      const remote = await requestTransform(activeTab.content, operation);
+      const remote = await transformMutation.mutateAsync({
+        input: activeTab.content,
+        operation,
+      });
       const diagnostics = {
         status: remote.status === "valid" ? "valid" : "error",
         message: remote.message,

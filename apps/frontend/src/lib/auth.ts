@@ -1,4 +1,5 @@
 import type { NextAuthOptions } from "next-auth";
+import axios from "axios";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -28,30 +29,36 @@ const syncAccountProfile = async ({
     roles: [],
   });
 
-  await fetch(`${backendBaseUrl}/auth/profile`, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  await axios.patch(
+    `${backendBaseUrl}/auth/profile`,
+    {
       email: email ?? undefined,
       displayName: displayName ?? undefined,
-    }),
-  });
-
-  if (provider && providerId) {
-    await fetch(`${backendBaseUrl}/auth/providers`, {
-      method: "POST",
+    },
+    {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
+      validateStatus: () => true,
+    }
+  );
+
+  if (provider && providerId) {
+    await axios.post(
+      `${backendBaseUrl}/auth/providers`,
+      {
         provider,
         providerId,
-      }),
-    });
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        validateStatus: () => true,
+      }
+    );
   }
 };
 
@@ -82,17 +89,20 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const response = await fetch(`${backendBaseUrl}/auth/otp/verify`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp }),
-        });
+        const response = await axios.post(
+          `${backendBaseUrl}/auth/otp/verify`,
+          { email, otp },
+          {
+            headers: { "Content-Type": "application/json" },
+            validateStatus: () => true,
+          }
+        );
 
-        if (!response.ok) {
+        if (response.status >= 400) {
           return null;
         }
 
-        const data = (await response.json()) as {
+        const data = response.data as {
           user?: { id: string; email?: string; roles?: string[] };
         };
 

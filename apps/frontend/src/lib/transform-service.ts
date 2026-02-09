@@ -1,3 +1,4 @@
+import axios from "axios";
 import { publicEnv } from "@/lib/public-env";
 
 export type TransformOperation = "format" | "minify" | "validate";
@@ -12,18 +13,21 @@ export const requestTransform = async (
   input: string,
   operation: TransformOperation
 ): Promise<TransformServiceResult> => {
-  const response = await fetch(`${publicEnv.apiUrl}/transform`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ input, operation }),
-  });
+  const response = await axios.post(
+    `${publicEnv.apiUrl}/transform`,
+    { input, operation },
+    {
+      headers: { "Content-Type": "application/json" },
+      validateStatus: () => true,
+    }
+  );
 
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
-    throw new Error(errorBody.error ?? "Transform request failed");
+  if (response.status >= 400) {
+    const errorBody = response.data as { error?: string } | undefined;
+    throw new Error(errorBody?.error ?? "Transform request failed");
   }
 
-  const data = (await response.json()) as { result?: TransformServiceResult };
+  const data = response.data as { result?: TransformServiceResult };
   if (!data.result) {
     throw new Error("Transform response missing result");
   }

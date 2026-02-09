@@ -1,3 +1,4 @@
+import axios from "axios";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
@@ -47,21 +48,24 @@ export const POST = async (request: Request): Promise<NextResponse> => {
   const interval = body.interval === "year" ? "year" : "month";
   const seats = toPositiveInt(body.seats, 1);
 
-  const response = await fetch(`${serverEnv.backendBaseUrl}/billing/checkout`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  const response = await axios.post(
+    `${serverEnv.backendBaseUrl}/billing/checkout`,
+    {
       planCode,
       interval,
       seats,
-    }),
-  });
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      validateStatus: () => true,
+    }
+  );
 
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
+  const payload = response.data as { error?: string } | undefined;
+  if (response.status >= 400) {
     return NextResponse.json({ error: payload?.error ?? "Checkout failed" }, { status: response.status });
   }
 

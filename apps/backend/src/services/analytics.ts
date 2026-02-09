@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import axios from "axios";
 
 export type AnalyticsEvent = {
   distinctId: string;
@@ -15,31 +16,33 @@ const generateAnonId = () => crypto.randomUUID();
 
 const sendPostHogEvent = async (payload: AnalyticsEvent): Promise<void> => {
   if (!POSTHOG_KEY || !ANALYTICS_ENDPOINT) return;
-  await fetch(`${ANALYTICS_ENDPOINT}/capture/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "User-Agent": "jsondeck-analytics",
-    },
-    body: JSON.stringify({
+  await axios.post(
+    `${ANALYTICS_ENDPOINT}/capture/`,
+    {
       api_key: POSTHOG_KEY,
       distinct_id: payload.distinctId,
       event: payload.event,
       properties: payload.properties ?? {},
       timestamp: payload.timestamp,
-    }),
-  });
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "jsondeck-analytics",
+      },
+      validateStatus: () => true,
+    }
+  );
 };
 
 const sendCustomEvent = async (payload: AnalyticsEvent): Promise<void> => {
   const endpoint = process.env.ANALYTICS_WEBHOOK_URL;
   if (!endpoint) return;
-  await fetch(endpoint, {
-    method: "POST",
+  await axios.post(endpoint, payload, {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(payload),
+    validateStatus: () => true,
   });
 };
 

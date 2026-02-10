@@ -1,14 +1,12 @@
 "use client";
 
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState, useTransition, type FormEvent } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 export default function LoginPage() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("next") ?? "/dashboard";
+  const callbackUrl = "/dashboard";
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState<string | null>(null);

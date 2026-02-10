@@ -9,5 +9,11 @@ module.exports = {
     "lint-staged",
     "typescript",
     "tsx",
+    "@typescript-eslint/parser",
+    "@typescript-eslint/eslint-plugin",
+    "eslint-config-next",
+    "express-serve-static-core",
+    "postcss",
+    "autoprefixer",
   ],
 };

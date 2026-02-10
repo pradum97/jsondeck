@@ -25,7 +25,7 @@ const getCookieValue = (setCookieHeader: string[], name: string): string | null 
   if (!target) {
     return null;
   }
-  const [cookiePair] = target.split(";");
+  const [cookiePair = ""] = target.split(";");
   const [, value] = cookiePair.split("=");
   return value ?? null;
 };

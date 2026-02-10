@@ -1,12 +1,12 @@
-const requireServerEnv = (key: string): string => {
+const getServerEnv = (key: string, fallback: string): string => {
   const value = process.env[key];
   if (!value) {
-    throw new Error(`Missing required environment variable: ${key}`);
+    return fallback;
   }
   return value;
 };
 
 export const serverEnv = {
-  backendBaseUrl: requireServerEnv("BACKEND_URL"),
-  nextAuthUrl: requireServerEnv("NEXTAUTH_URL"),
+  backendBaseUrl: getServerEnv("BACKEND_URL", "http://localhost:4001/api"),
+  nextAuthUrl: getServerEnv("NEXTAUTH_URL", "http://localhost:4000"),
 };

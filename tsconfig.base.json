@@ -9,7 +9,7 @@
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "useUnknownInCatchVariables": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

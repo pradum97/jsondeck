@@ -38,7 +38,7 @@ export const createSubscriptionHandler = asyncHandler(async (req: Request, res: 
     planCode: ensureString(req.body?.planCode, "planCode"),
     interval: ensureString(req.body?.interval, "interval") === "year" ? "year" : "month",
     seats: ensurePositiveInt(req.body?.seats, "seats"),
-    status: req.body?.status ? ensureString(req.body.status, "status") : undefined,
+    status: req.body?.status ? (ensureString(req.body.status, "status") as "active" | "trialing" | "past_due" | "canceled") : undefined,
     currentPeriodStart: new Date(ensureString(req.body?.currentPeriodStart, "currentPeriodStart")),
     currentPeriodEnd: new Date(ensureString(req.body?.currentPeriodEnd, "currentPeriodEnd")),
     cancelAtPeriodEnd: req.body?.cancelAtPeriodEnd ? Boolean(req.body.cancelAtPeriodEnd) : undefined,

@@ -130,8 +130,8 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
   const visibleRawLines = filteredRawLines.slice(0, VIRTUAL_WINDOW * 2);
 
   return (
-    <div className="flex h-full min-h-0 flex-col rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#0b1220]">
-      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1.5 border-b border-slate-200 bg-white/95 px-2.5 py-2 backdrop-blur dark:border-slate-800 dark:bg-[#0b1220]/95">
+    <div className="flex h-full min-h-0 flex-col rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1.5 border-b border-[color:var(--border)] bg-[color:var(--surface)]/95 px-2.5 py-2 backdrop-blur ">
         <p className={cn("mr-auto text-xs font-semibold", diagnostics.status === "error" ? "text-error" : "text-success")}>{diagnostics.message}</p>
         {(["raw", "tree", "table"] as const).map((tab) => (
           <motion.button key={tab} type="button" onClick={() => setView(tab)} whileHover={{ y: -1 }} className={cn("h-7 rounded-full border px-2.5 text-[10px] uppercase tracking-normal transition", view === tab ? "border-accent bg-accent-soft text-accent" : "border-border text-secondary hover:border-accent")}>
@@ -141,9 +141,9 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
       </div>
 
       <div className="grid gap-1.5 border-b border-border px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-4">
-        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="h-8 rounded-lg border border-slate-300 bg-white px-2.5 text-xs text-slate-900 focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
-        <input value={keyFilter} onChange={(event) => setKeyFilter(event.target.value)} placeholder="Filter key" className="h-8 rounded-lg border border-slate-300 bg-white px-2.5 text-xs text-slate-900 focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
-        <input value={valueFilter} onChange={(event) => setValueFilter(event.target.value)} placeholder="Filter value" className="h-8 rounded-lg border border-slate-300 bg-white px-2.5 text-xs text-slate-900 focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100" />
+        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="h-8 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 text-xs text-[color:var(--text)] focus:ring-2 focus:ring-[color:var(--accent)]" />
+        <input value={keyFilter} onChange={(event) => setKeyFilter(event.target.value)} placeholder="Filter key" className="h-8 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 text-xs text-[color:var(--text)] focus:ring-2 focus:ring-[color:var(--accent)]" />
+        <input value={valueFilter} onChange={(event) => setValueFilter(event.target.value)} placeholder="Filter value" className="h-8 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 text-xs text-[color:var(--text)] focus:ring-2 focus:ring-[color:var(--accent)]" />
         <div className="flex items-center gap-1.5">
           <button type="button" onClick={() => setCollapseDepth(0)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-normal text-secondary transition hover:border-accent">Expand</button>
           <button type="button" onClick={() => setCollapseDepth(1)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-normal text-secondary transition hover:border-accent">Depth 1</button>
@@ -156,21 +156,21 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={view} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }} className="h-full">
             {view === "raw" ? (
-              <pre className="h-full overflow-auto whitespace-pre-wrap rounded-xl border border-slate-200 bg-white p-2.5 font-mono text-xs leading-relaxed text-slate-700 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-300">
+              <pre className="h-full overflow-auto whitespace-pre-wrap rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2.5 font-mono text-xs leading-relaxed text-[color:var(--text)]">
                 {visibleRawLines.map((line, index) => <div key={`${index}-${line}`}>{highlightText(line, search)}</div>)}
               </pre>
             ) : null}
 
             {view === "tree" ? parsed ? (
-              <div className="h-full overflow-auto rounded-xl border border-slate-200 bg-white p-2.5 font-mono leading-relaxed tracking-normal dark:border-slate-800 dark:bg-[#0b1220]">
+              <div className="h-full overflow-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2.5 font-mono leading-relaxed tracking-normal">
                 <TreeNode path="$" label="$" value={parsed} search={search} collapseDepth={collapseDepth} level={0} />
               </div>
             ) : <p className="text-sm text-muted">Valid JSON is required for tree view.</p> : null}
 
             {view === "table" ? parsed ? (
-              <div className="h-full overflow-auto rounded-xl border border-slate-200 bg-white p-2.5 font-mono dark:border-slate-800 dark:bg-[#0b1220]">
+              <div className="h-full overflow-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2.5 font-mono">
                 <table className="w-full text-left text-xs text-secondary leading-relaxed tracking-normal">
-                  <thead className="sticky top-0 bg-white text-muted dark:bg-[#0b1220]">
+                  <thead className="sticky top-0 bg-[color:var(--bg)] text-[color:var(--muted)]">
                     <tr>
                       <th className="pb-2">Path</th>
                       <th className="pb-2">Type</th>

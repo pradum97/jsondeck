@@ -30,7 +30,7 @@ type JsonErrorLocation = {
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center rounded-xl border border-border bg-card text-xs text-muted">
+    <div className="flex h-full items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-xs text-[color:var(--muted)]">
       Loading editor...
     </div>
   ),
@@ -222,7 +222,7 @@ export function EditorPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-[calc(100vh-14rem)] flex-1 flex-col rounded-2xl border border-slate-300 bg-card p-2 shadow-sm dark:border-slate-700">
+      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-2">
         <div className="flex items-center gap-2 overflow-x-auto pb-3">
           <EditorTabs onAddTab={handleNewTab} />
         </div>
@@ -248,22 +248,23 @@ export function EditorPage() {
         </div>
 
         <div className="relative min-h-0 flex-1 pt-3">
-          <div className={cn("absolute inset-0 rounded-xl bg-white shadow-sm dark:bg-[#0b1220]", isViewerMode ? "hidden" : "block")}>
+          <div className={cn("absolute inset-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)]", isViewerMode ? "hidden" : "block")}>
             <MonacoEditor
               height="100%"
               width="100%"
               defaultLanguage="json"
-              theme="vs-dark"
+              theme="jsondeck"
               value={activeTab.content}
               beforeMount={(monaco: typeof MonacoNamespace) => {
-                monaco.editor.defineTheme("vs-dark", {
-                  base: "vs-dark",
+                const isDark = document.documentElement.classList.contains("dark");
+                monaco.editor.defineTheme("jsondeck", {
+                  base: isDark ? "vs-dark" : "vs",
                   inherit: true,
                   rules: [],
                   colors: {
-                    "editor.background": "#0b1220",
-                    "editorLineNumber.foreground": "#475569",
-                    "editorLineNumber.activeForeground": "#cbd5e1",
+                    "editor.background": isDark ? "#0f172a" : "#ffffff",
+                    "editorLineNumber.foreground": isDark ? "#64748b" : "#94a3b8",
+                    "editorLineNumber.activeForeground": isDark ? "#e2e8f0" : "#334155",
                   },
                 });
               }}
@@ -271,8 +272,8 @@ export function EditorPage() {
               onChange={(nextValue) => updateTabContent(activeTab.id, nextValue ?? "")}
               options={{
                 minimap: { enabled: false },
-                fontSize: 16,
-                lineHeight: 22,
+                fontSize: 17,
+                lineHeight: 24,
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
                 smoothScrolling: true,
@@ -290,18 +291,18 @@ export function EditorPage() {
 
       <AnimatePresence>
         {showLoadModal ? (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 p-4 backdrop-blur-sm dark:bg-card/90" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-slate-200 bg-card p-5 shadow-sm dark:border-slate-800">
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--bg)]/80 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
               <h2 className="text-base font-semibold text-text">Load JSON from API URL</h2>
               <input
                 value={apiUrl}
                 onChange={(event) => setApiUrl(event.target.value)}
                 placeholder="https://api.example.com/data"
-                className="mt-3 h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-border dark:bg-card dark:text-secondary"
+                className="mt-3 h-10 w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-3 text-sm text-[color:var(--text)]"
               />
               <div className="mt-4 flex justify-end gap-2">
-                <button type="button" onClick={() => setShowLoadModal(false)} className="h-9 rounded-lg border border-slate-300 bg-white px-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 dark:border-border dark:bg-transparent dark:text-secondary">Cancel</button>
-                <button type="button" onClick={() => void handleLoadJson()} className="h-9 rounded-lg bg-blue-600 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-white hover:bg-blue-700 dark:bg-accent-soft dark:text-accent dark:hover:bg-accent-soft">Load</button>
+                <button type="button" onClick={() => setShowLoadModal(false)} className="h-9 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--muted)]">Cancel</button>
+                <button type="button" onClick={() => void handleLoadJson()} className="h-9 rounded-lg bg-[color:var(--accent)] px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--surface)] hover:bg-[color:var(--accent-hover)]">Load</button>
               </div>
             </motion.div>
           </motion.div>

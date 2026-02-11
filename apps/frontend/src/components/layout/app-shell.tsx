@@ -1,48 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { Navbar } from "@/components/layout/navbar";
 import { FirstVisitModal } from "@/components/layout/first-visit-modal";
 import { Footer } from "@/components/layout/footer";
-import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
-
     navigator.serviceWorker.register("/service-worker.js").catch(() => {
-      // Ignore registration errors; offline support is best-effort.
+      // best effort
     });
   }, []);
 
-  const isLightTheme = mounted && resolvedTheme === "light";
-
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-bg text-text">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_9%,transparent),_transparent_52%)]" />
-      <div className="relative z-10 flex min-h-screen flex-col">
+    <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--text)]">
+      <div className="flex min-h-screen flex-col">
         <Navbar />
-        <motion.section
-          className={`relative mx-2 mb-2 mt-1 flex min-h-0 flex-1 flex-col rounded-xl border p-2 shadow-sm sm:mx-3 sm:mb-3 sm:p-3 ${
-            isLightTheme
-              ? "border-slate-200 bg-white"
-              : "glass border-slate-800 bg-section"
-          }`}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        >
-          <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col">{children}</div>
-        </motion.section>
+        <main className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col px-2 pb-3 pt-2 sm:px-4">
+          {children}
+        </main>
         <Footer />
       </div>
       <FirstVisitModal />

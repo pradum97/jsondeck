@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { ResizableSplit } from "@/components/editor/resizable-split";
@@ -16,20 +15,12 @@ export function TransformPage() {
   const [input, setInput] = useState(DEFAULT_INPUT);
   const [target, setTarget] = useState<TransformTarget>("TypeScript");
   const [copied, setCopied] = useState(false);
-  const [result, setResult] = useState<TransformResult>({
-    output: "",
-    status: "error",
-    message: "Paste JSON to generate output.",
-  });
+  const [result, setResult] = useState<TransformResult>({ output: "", status: "error", message: "Paste JSON to generate output." });
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
-    const worker = new Worker(
-      new URL("@/workers/transform.worker.ts", import.meta.url)
-    );
-    worker.onmessage = (event: MessageEvent<TransformResult>) => {
-      setResult(event.data);
-    };
+    const worker = new Worker(new URL("@/workers/transform.worker.ts", import.meta.url));
+    worker.onmessage = (event: MessageEvent<TransformResult>) => setResult(event.data);
     workerRef.current = worker;
     return () => {
       worker.terminate();
@@ -50,68 +41,50 @@ export function TransformPage() {
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:backdrop-blur-md">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500 dark:text-slate-300">Transform Studio</p>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">JSON Transform</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <select
-            value={target}
-            onChange={(event) => setTarget(event.target.value as TransformTarget)}
-            className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-          >
-            {TARGET_OPTIONS.map((option) => (
-              <option key={option} value={option}>{option}</option>
-            ))}
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2">
+        <p className="text-sm font-semibold text-[color:var(--text)]">Transform Studio</p>
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+          <select value={target} onChange={(event) => setTarget(event.target.value as TransformTarget)} className="h-9 min-w-[140px] rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-3 text-sm text-[color:var(--text)]">
+            {TARGET_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
           </select>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="rounded-lg border border-blue-600 bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white hover:bg-blue-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-          >
+          <button type="button" onClick={handleCopy} className="h-9 rounded-lg bg-[color:var(--accent)] px-4 text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--surface)] hover:bg-[color:var(--accent-hover)]">
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
       </div>
 
-      <motion.div className="min-h-0 flex-1 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/50" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-        <div className="mb-3 flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">
-          <span>JSON Editor</span>
-          <span className={cn(result.status === "valid" ? "text-blue-600 dark:text-blue-300" : "text-red-600 dark:text-red-300")}>
+      <div className="min-h-0 flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-2">
+        <div className="mb-2 flex items-center justify-between text-xs text-[color:var(--muted)]">
+          <span>Source JSON</span>
+          <span className={cn(result.status === "valid" ? "text-[color:var(--success)]" : "text-[color:var(--error)]")}>
             {result.status === "valid" ? result.message : "Invalid JSON"}
           </span>
         </div>
-        <div className="h-[560px] overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
+
+        <div className="h-full min-h-0 overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
           <ResizableSplit
             initialRatio={0.5}
             left={
-              <div className="flex h-full flex-col gap-2 pr-2">
-                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">JSON Editor</div>
-                <div className="h-full overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
-                  <MonacoEditor
-                    theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
-                    value={input}
-                    onChange={setInput}
-                    options={{ minimap: { enabled: false }, fontSize: 16, lineHeight: 22, automaticLayout: true, scrollBeyondLastLine: false }}
-                  />
-                </div>
+              <div className="h-full overflow-hidden border-r border-[color:var(--border)]">
+                <MonacoEditor
+                  theme={resolvedTheme === "dark" ? "vs-dark" : "vs-light"}
+                  value={input}
+                  onChange={setInput}
+                  options={{ minimap: { enabled: false }, fontSize: 17, lineHeight: 24, automaticLayout: true, scrollBeyondLastLine: false }}
+                />
               </div>
             }
             right={
-              <div className="flex h-full flex-col gap-2 pl-2">
-                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">Output Preview</div>
-                <div className="h-full overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950/70">
-                  <pre className="h-full overflow-auto p-4 text-sm text-slate-900 dark:text-slate-100">
-                    {result.output || "Paste JSON to generate output."}
-                  </pre>
-                </div>
+              <div className="h-full overflow-hidden">
+                <pre className="h-full overflow-auto p-4 text-sm leading-6 text-[color:var(--text)]">
+                  {result.output || "Paste JSON to generate output."}
+                </pre>
               </div>
             }
           />
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

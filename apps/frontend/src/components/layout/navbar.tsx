@@ -1,12 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
 
 type UserRole = "guest" | "user" | "pro" | "team" | "admin" | "superadmin";
 
@@ -21,124 +19,96 @@ const navLinks: Array<{ href: Route; label: string; roles: UserRole[] }> = [
 export function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
   const [role, setRole] = useState<UserRole>("guest");
-  const [openMenu, setOpenMenu] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const storedRole = localStorage.getItem("jsondeck.role") as UserRole | null;
-    if (storedRole) {
-      setRole(storedRole);
-    }
+    if (storedRole) setRole(storedRole);
   }, []);
 
   const visibleLinks = useMemo(() => navLinks.filter((link) => link.roles.includes(role)), [role]);
   const isLoggedIn = role !== "guest";
 
-  const handleToggle = () => {
-    if (!mounted) return;
-    setTheme(resolvedTheme === "light" ? "dark" : "light");
-  };
-
   const handleLogout = () => {
     localStorage.setItem("jsondeck.role", "guest");
     setRole("guest");
-    setOpenMenu(false);
+    setOpenDrawer(false);
   };
 
-  const isLightTheme = mounted && resolvedTheme === "light";
+  const isLightTheme = resolvedTheme !== "dark";
 
-  if (!mounted) {
-    return <nav className="sticky top-2 z-40 mx-2 mt-2 h-[52px] rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm sm:mx-3 sm:px-4 sm:py-2.5" />;
-  }
+  const linkClasses = (active: boolean) =>
+    `rounded-xl px-3 py-2 text-sm font-medium transition ${active ? "bg-[color:var(--accent-soft)] text-[color:var(--text)]" : "text-[color:var(--muted)] hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--text)]"}`;
 
   return (
-    <nav
-      className={`sticky top-2 z-40 mx-2 mt-2 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-3 py-2 shadow-sm sm:mx-3 sm:px-4 sm:py-2.5 ${
-        isLightTheme
-          ? "bg-white border-b border-slate-200 text-slate-800"
-          : "glass border-slate-800"
-      }`}
-    >
-      <Link href="/home" className={`flex shrink-0 items-center gap-2 text-base font-semibold sm:text-lg ${isLightTheme ? "text-slate-800" : "text-slate-100"}`}>
-        <span className="h-2 w-2 rounded-full bg-accent" />
-        JSONDeck
-      </Link>
+    <>
+      <nav className="sticky top-0 z-40 border-b border-[color:var(--border)] bg-[color:var(--surface)]/95 backdrop-blur">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
+          <Link href="/home" className="flex items-center gap-2 text-base font-semibold text-[color:var(--text)] sm:text-lg">
+            <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--accent)]" /> JSONDeck
+          </Link>
 
-      <div className={`order-3 flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-1 text-sm sm:order-2 sm:w-auto sm:flex-wrap sm:justify-center sm:gap-2 sm:overflow-visible sm:pb-0 ${isLightTheme ? "text-slate-800" : "text-slate-300"}`}>
-        {visibleLinks.map((link) => {
-          const isActive = pathname === link.href || (link.href === "/home" && pathname === "/");
-
-          return (
-            <motion.div
-              key={link.href}
-              whileHover={{ scale: 1.03, y: -1 }}
-              whileTap={{ scale: 0.98, y: 0 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-            >
-              <Link
-                href={link.href}
-                className={`relative block cursor-pointer whitespace-nowrap rounded-lg border px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] transition-all duration-200 ${
-                  isActive
-                    ? isLightTheme
-                      ? "border-blue-600 bg-white font-semibold text-blue-600"
-                      : "border-blue-500/70 bg-blue-500/20 font-semibold text-slate-100 shadow-sm"
-                    : isLightTheme
-                      ? "border-slate-200 bg-white font-medium text-slate-700 hover:bg-white hover:text-slate-900"
-                      : "border-slate-800 bg-slate-900/60 font-medium text-slate-300 hover:bg-slate-800 hover:text-slate-100"
-                }`}
-              >
-                {link.label}
-                {isActive ? (
-                  <motion.span
-                    layoutId="active-navbar-indicator"
-                    className={`absolute inset-x-2 -bottom-1.5 h-0.5 rounded-full ${isLightTheme ? "bg-blue-500" : "bg-blue-400"}`}
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                ) : null}
-              </Link>
-            </motion.div>
-          );
-        })}
-      </div>
-
-      <div className="order-2 flex items-center gap-2 sm:order-3">
-        {!isLoggedIn ? (
-          <div className="flex items-center gap-2 text-xs">
-            <Link href="/login" className={`rounded-lg border px-3 py-1.5 ${isLightTheme ? "border-slate-200 bg-white text-slate-700 hover:bg-white hover:text-slate-900" : "border-slate-800 bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-slate-100"}`}>Login</Link>
-            <Link href="/signup" className={`rounded-lg border px-3 py-1.5 ${isLightTheme ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700" : "border-blue-500/70 bg-blue-500/20 text-slate-100 hover:bg-blue-500/30"}`}>Sign Up</Link>
+          <div className="hidden items-center gap-1 lg:flex">
+            {visibleLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href === "/home" && pathname === "/");
+              return (
+                <Link key={link.href} href={link.href} className={linkClasses(isActive)}>
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
-        ) : (
-          <div className="relative">
+
+          <div className="hidden items-center gap-2 lg:flex">
+            {!isLoggedIn ? (
+              <>
+                <Link href="/login" className="rounded-xl border border-[color:var(--border)] px-3 py-2 text-sm font-medium text-[color:var(--text)] hover:bg-[color:var(--accent-soft)]">Login</Link>
+                <Link href="/signup" className="rounded-xl bg-[color:var(--accent)] px-3 py-2 text-sm font-semibold text-[color:var(--surface)] hover:bg-[color:var(--accent-hover)]">Sign up</Link>
+              </>
+            ) : (
+              <button type="button" onClick={handleLogout} className="rounded-xl border border-[color:var(--border)] px-3 py-2 text-sm font-medium text-[color:var(--text)] hover:bg-[color:var(--accent-soft)]">Logout</button>
+            )}
             <button
               type="button"
-              onClick={() => setOpenMenu((value) => !value)}
-              className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold ${isLightTheme ? "border-slate-200 bg-white text-slate-800" : "border-slate-700 bg-slate-900 text-slate-100"}`}
+              onClick={() => setTheme(isLightTheme ? "dark" : "light")}
+              className="rounded-xl border border-[color:var(--border)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[color:var(--text)] hover:bg-[color:var(--accent-soft)]"
             >
-              JD
+              {isLightTheme ? "Dark" : "Light"}
             </button>
-            {openMenu ? (
-              <div className={`absolute right-0 top-10 z-50 min-w-36 rounded-lg border p-1 text-xs shadow-sm backdrop-blur ${isLightTheme ? "border-slate-200 bg-white text-slate-600" : "border-slate-800 bg-slate-900/95 text-slate-300"}`}>
-                <Link href="/settings" onClick={() => setOpenMenu(false)} className={`block rounded-md px-3 py-2 ${isLightTheme ? "hover:bg-white hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Profile</Link>
-                <Link href="/settings" onClick={() => setOpenMenu(false)} className={`block rounded-md px-3 py-2 ${isLightTheme ? "hover:bg-white hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Billing</Link>
-                <button type="button" onClick={handleLogout} className={`block w-full rounded-md px-3 py-2 text-left ${isLightTheme ? "hover:bg-white hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Logout</button>
-              </div>
-            ) : null}
           </div>
-        )}
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={handleToggle}
-          className={`inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs ${isLightTheme ? "border-slate-200 bg-white text-slate-600" : "border-slate-800 bg-slate-900/60 text-slate-300"}`}
-        >
-          <span aria-hidden="true">{isLightTheme ? "🌙" : "☀"}</span>
-          <span>{isLightTheme ? "Dark" : "Light"}</span>
-        </Button>
+          <button type="button" onClick={() => setOpenDrawer((v) => !v)} className="rounded-xl border border-[color:var(--border)] p-2 text-[color:var(--text)] lg:hidden" aria-label="Toggle menu">
+            ☰
+          </button>
+        </div>
+      </nav>
+
+      <div className={`fixed inset-0 z-50 lg:hidden ${openDrawer ? "pointer-events-auto" : "pointer-events-none"}`}>
+        <button type="button" className={`absolute inset-0 bg-[color:var(--bg)]/60 ${openDrawer ? "opacity-100" : "opacity-0"}`} onClick={() => setOpenDrawer(false)} aria-label="Close menu" />
+        <aside className={`absolute right-0 top-0 h-full w-[min(86vw,340px)] border-l border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition-transform ${openDrawer ? "translate-x-0" : "translate-x-full"}`}>
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-base font-semibold text-[color:var(--text)]">Menu</p>
+            <button type="button" className="rounded-lg border border-[color:var(--border)] px-2 py-1 text-sm text-[color:var(--text)]" onClick={() => setOpenDrawer(false)}>✕</button>
+          </div>
+          <div className="flex flex-col gap-2">
+            {visibleLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href === "/home" && pathname === "/");
+              return (
+                <Link key={link.href} href={link.href} onClick={() => setOpenDrawer(false)} className={linkClasses(isActive)}>
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+          <div className="mt-6 flex flex-col gap-2">
+            <Link href="/login" onClick={() => setOpenDrawer(false)} className="rounded-xl border border-[color:var(--border)] px-3 py-2 text-sm font-medium text-[color:var(--text)]">Login</Link>
+            <Link href="/signup" onClick={() => setOpenDrawer(false)} className="rounded-xl bg-[color:var(--accent)] px-3 py-2 text-sm font-semibold text-[color:var(--surface)]">Sign up</Link>
+            {isLoggedIn ? <button type="button" onClick={handleLogout} className="rounded-xl border border-[color:var(--border)] px-3 py-2 text-left text-sm text-[color:var(--text)]">Logout</button> : null}
+            <button type="button" onClick={() => setTheme(isLightTheme ? "dark" : "light")} className="rounded-xl border border-[color:var(--border)] px-3 py-2 text-left text-sm text-[color:var(--text)]">Switch to {isLightTheme ? "dark" : "light"}</button>
+          </div>
+        </aside>
       </div>
-    </nav>
+    </>
   );
 }

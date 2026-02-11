@@ -21,7 +21,7 @@ function ToolbarButton({ label, onClick, shortcut, variant = "secondary" }: Tool
       className={cn(
         "inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition",
         variant === "primary"
-          ? "border-accent bg-accent-soft text-accent shadow-[0_0_16px_rgba(34,211,238,0.35)]"
+          ? "border-accent bg-accent-soft text-accent shadow-sm"
           : "border-border bg-section text-secondary hover:border-accent"
       )}
     >

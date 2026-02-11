@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useMutation } from "@tanstack/react-query";
-import { useTheme } from "next-themes";
 import type { editor } from "monaco-editor";
 import type * as MonacoNamespace from "monaco-editor";
 import { requestTransform, type TransformOperation } from "@/lib/transform-service";
@@ -83,7 +82,6 @@ function parseJsonError(input: string): JsonErrorLocation | null {
 
 export function EditorPage() {
   const pathname = usePathname();
-  const { resolvedTheme } = useTheme();
   const { tabs, activeTabId, updateTabContent, addTab, setDiagnostics, setOutput, addHistory, hydrate, markSaved } = useEditorStore();
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
   const [showLoadModal, setShowLoadModal] = useState(false);
@@ -249,10 +247,10 @@ export function EditorPage() {
               height="100%"
               width="100%"
               defaultLanguage="json"
-              theme={resolvedTheme === "light" ? "vs-light" : "jsondeck-navy"}
+              theme="vs-dark"
               value={activeTab.content}
               beforeMount={(monaco: typeof MonacoNamespace) => {
-                monaco.editor.defineTheme("jsondeck-navy", {
+                monaco.editor.defineTheme("vs-dark", {
                   base: "vs-dark",
                   inherit: true,
                   rules: [],

@@ -1,15 +1,17 @@
-import { LandingHero } from "@/components/landing/landing-hero";
-import { PlatformHighlights } from "@/components/landing/platform-highlights";
-import { WorkflowGrid } from "@/components/landing/workflow-grid";
+import dynamic from "next/dynamic";
+
+const EditorPage = dynamic(
+  () => import("@/components/editor/editor-page").then((mod) => mod.EditorPage),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-3xl border border-slate-800/70 bg-slate-950/50 p-6 text-slate-300">
+        Loading editor workspace...
+      </div>
+    ),
+  }
+);
 
 export default function HomePage() {
-  return (
-    <main className="min-h-screen px-6 py-12 lg:px-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12">
-        <LandingHero />
-        <PlatformHighlights />
-        <WorkflowGrid />
-      </div>
-    </main>
-  );
+  return <EditorPage />;
 }

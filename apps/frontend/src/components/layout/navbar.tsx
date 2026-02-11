@@ -2,25 +2,37 @@
 
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-const navLinks = [
-  { href: "/editor", label: "Editor" },
-  { href: "/transform", label: "Transform" },
-  { href: "/tools", label: "Tools" },
-  { href: "/api-tester", label: "API Tester" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/settings", label: "Settings" },
+type UserRole = "guest" | "user" | "pro" | "team" | "admin" | "superadmin";
+
+const navLinks: Array<{ href: string; label: string; roles: UserRole[] }> = [
+  { href: "/", label: "Home", roles: ["user", "pro", "team", "admin", "superadmin"] },
+  { href: "/editor", label: "Editor", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
+  { href: "/transform", label: "Transform", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
+  { href: "/tools", label: "Tools", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
+  { href: "/api-tester", label: "API Tester", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
+  { href: "/settings", label: "Settings", roles: ["user", "pro", "team", "admin", "superadmin"] },
 ];
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [role, setRole] = useState<UserRole>("guest");
 
   useEffect(() => {
     setMounted(true);
+    const storedRole = localStorage.getItem("jsondeck.role") as UserRole | null;
+    if (storedRole) {
+      setRole(storedRole);
+    }
   }, []);
+
+  const visibleLinks = useMemo(
+    () => navLinks.filter((link) => link.roles.includes(role)),
+    [role]
+  );
 
   const handleToggle = () => {
     if (!mounted) return;
@@ -34,11 +46,11 @@ export function Navbar() {
         JSONDeck
       </Link>
       <div className="flex flex-wrap items-center gap-3 text-sm text-slate-200">
-        {navLinks.map((link) => (
+        {visibleLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className="rounded-full px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-200 transition hover:text-emerald-200"
+            className="rounded-full px-3 py-1 text-xs uppercase tracking-[0.18em] text-slate-200 transition hover:bg-slate-800/70 hover:text-emerald-200"
           >
             {link.label}
           </Link>

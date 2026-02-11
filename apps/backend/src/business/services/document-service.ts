@@ -3,6 +3,11 @@ import { DocumentModel, type DocumentDocument } from "../models/document";
 import { ProjectModel } from "../models/project";
 import { WorkspaceModel } from "../models/workspace";
 
+type PaginationInput = {
+  page?: number;
+  limit?: number;
+};
+
 export interface DocumentInput {
   projectId: string;
   title: string;
@@ -10,11 +15,17 @@ export interface DocumentInput {
 }
 
 const ensureProjectAccess = async (projectId: string, userId: string) => {
-  const project = await ProjectModel.findById(projectId).exec();
+  const project = await ProjectModel.findById(projectId)
+    .select({ workspaceId: 1 })
+    .lean()
+    .exec();
   if (!project) {
     throw new AppError("Project not found", 404);
   }
-  const workspace = await WorkspaceModel.findById(project.workspaceId).exec();
+  const workspace = await WorkspaceModel.findById(project.workspaceId)
+    .select({ memberIds: 1 })
+    .lean()
+    .exec();
   if (!workspace || !workspace.memberIds.includes(userId)) {
     throw new AppError("Access denied", 403);
   }
@@ -32,9 +43,20 @@ export const createDocument = async (input: DocumentInput, userId: string): Prom
   return document.save();
 };
 
-export const listDocuments = async (projectId: string, userId: string): Promise<DocumentDocument[]> => {
+export const listDocuments = async (
+  projectId: string,
+  userId: string,
+  pagination?: PaginationInput
+): Promise<DocumentDocument[]> => {
   await ensureProjectAccess(projectId, userId);
-  return DocumentModel.find({ projectId }).sort({ updatedAt: -1 }).exec();
+  const query = DocumentModel.find({ projectId }).sort({ updatedAt: -1 });
+
+  if (pagination?.limit !== undefined) {
+    const page = pagination.page ?? 1;
+    query.skip((page - 1) * pagination.limit).limit(pagination.limit);
+  }
+
+  return query.exec();
 };
 
 export const getDocument = async (documentId: string, userId: string): Promise<DocumentDocument> => {

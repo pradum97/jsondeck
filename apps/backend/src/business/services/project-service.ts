@@ -3,8 +3,16 @@ import { ProjectModel, type ProjectDocument } from "../models/project";
 import type { ProjectInput } from "../types";
 import { WorkspaceModel } from "../models/workspace";
 
+type PaginationInput = {
+  page?: number;
+  limit?: number;
+};
+
 export const createProject = async (input: ProjectInput, userId: string): Promise<ProjectDocument> => {
-  const workspace = await WorkspaceModel.findById(input.workspaceId).exec();
+  const workspace = await WorkspaceModel.findById(input.workspaceId)
+    .select({ memberIds: 1 })
+    .lean()
+    .exec();
   if (!workspace) {
     throw new AppError("Workspace not found", 404);
   }
@@ -22,15 +30,29 @@ export const createProject = async (input: ProjectInput, userId: string): Promis
   return project;
 };
 
-export const listProjects = async (workspaceId: string, userId: string): Promise<ProjectDocument[]> => {
-  const workspace = await WorkspaceModel.findById(workspaceId).exec();
+export const listProjects = async (
+  workspaceId: string,
+  userId: string,
+  pagination?: PaginationInput
+): Promise<ProjectDocument[]> => {
+  const workspace = await WorkspaceModel.findById(workspaceId)
+    .select({ memberIds: 1 })
+    .lean()
+    .exec();
   if (!workspace) {
     throw new AppError("Workspace not found", 404);
   }
   if (!workspace.memberIds.includes(userId)) {
     throw new AppError("Access denied", 403);
   }
-  return ProjectModel.find({ workspaceId }).sort({ updatedAt: -1 }).exec();
+  const query = ProjectModel.find({ workspaceId }).sort({ updatedAt: -1 });
+
+  if (pagination?.limit !== undefined) {
+    const page = pagination.page ?? 1;
+    query.skip((page - 1) * pagination.limit).limit(pagination.limit);
+  }
+
+  return query.exec();
 };
 
 export const getProject = async (projectId: string, userId: string): Promise<ProjectDocument> => {
@@ -38,7 +60,10 @@ export const getProject = async (projectId: string, userId: string): Promise<Pro
   if (!project) {
     throw new AppError("Project not found", 404);
   }
-  const workspace = await WorkspaceModel.findById(project.workspaceId).exec();
+  const workspace = await WorkspaceModel.findById(project.workspaceId)
+    .select({ memberIds: 1 })
+    .lean()
+    .exec();
   if (!workspace || !workspace.memberIds.includes(userId)) {
     throw new AppError("Access denied", 403);
   }

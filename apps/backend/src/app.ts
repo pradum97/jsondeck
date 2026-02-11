@@ -18,6 +18,7 @@ import { logger as httpLogger } from "./middlewares/logger";
 import { rateLimiter } from "./middlewares/rate-limit";
 import { validationMiddleware } from "./middlewares/validate";
 import { cache } from "./services/cache";
+import { gzipCompression } from "./middlewares/compression";
 
 export const createApp = (): express.Express => {
   const app = express();
@@ -44,6 +45,7 @@ export const createApp = (): express.Express => {
     })
   );
   app.use(cookieParser());
+  app.use(gzipCompression);
   app.use(
     express.json({
       limit: "2mb",

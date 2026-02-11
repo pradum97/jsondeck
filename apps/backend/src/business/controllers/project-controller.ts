@@ -3,6 +3,17 @@ import { asyncHandler } from "../../utils/async-handler";
 import { ensureOptionalString, ensureString } from "../validation";
 import { createProject, deleteProject, getProject, listProjects, updateProject } from "../services/project-service";
 
+const parsePositiveInteger = (value: unknown): number | undefined => {
+  if (typeof value !== "string" || value.length === 0) {
+    return undefined;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return undefined;
+  }
+  return parsed;
+};
+
 export const createProjectHandler = asyncHandler(async (req: Request, res: Response) => {
   const workspaceId = ensureString(req.body?.workspaceId, "workspaceId");
   const name = ensureString(req.body?.name, "name");
@@ -13,7 +24,9 @@ export const createProjectHandler = asyncHandler(async (req: Request, res: Respo
 
 export const listProjectsHandler = asyncHandler(async (req: Request, res: Response) => {
   const workspaceId = ensureString(req.query.workspaceId, "workspaceId");
-  const projects = await listProjects(workspaceId, req.auth?.subject ?? "");
+  const page = parsePositiveInteger(req.query.page);
+  const limit = parsePositiveInteger(req.query.limit);
+  const projects = await listProjects(workspaceId, req.auth?.subject ?? "", { page, limit });
   res.status(200).json({ projects });
 });
 

@@ -39,10 +39,8 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/editor/:path*",
-    "/transform/:path*",
-    "/tools/:path*",
-    "/api-tester/:path*",
+    "/billing/:path*",
+    "/admin/:path*",
     "/settings/admin/:path*",
   ],
 };

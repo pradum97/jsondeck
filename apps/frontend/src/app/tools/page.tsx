@@ -5,7 +5,7 @@ const ToolsPage = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="rounded-3xl border border-slate-800/70 bg-slate-950/50 p-6 text-slate-300">
+      <div className="rounded-xl border border-border bg-card p-6 text-muted-foreground">
         Loading tools vault...
       </div>
     ),

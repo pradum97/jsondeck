@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 import { env } from "../../config/env";
 import { AppError } from "../../middleware/error-handler";
 import { asyncHandler } from "../../utils/async-handler";
-import { ensureEmail, ensureString } from "../validation";
-import { authenticateUser, getOrCreateUserByEmail, getUserById } from "../services/auth-session-service";
+import { ensureEmail, ensureOptionalString, ensureString } from "../validation";
+import { authenticateUser, createUser, getOrCreateUserByEmail, getUserById } from "../services/auth-session-service";
 import { getActiveRefreshToken, revokeRefreshToken, rotateRefreshToken, storeRefreshToken } from "../services/refresh-token-service";
 import { requestOtpForEmail, verifyOtpForEmail } from "../services/otp-service";
 import { connectProviderHandler, getProfileHandler, upsertProfileHandler } from "./auth-controller";
@@ -41,6 +41,9 @@ const getCookie = (req: Request, name: string): string | null => {
 
   return null;
 };
+
+
+const passwordResetTokens = new Map<string, { userId: string; expiresAt: number }>();
 
 const signAccessToken = (subject: string, roles: string[], email?: string): string => {
   return jwt.sign(
@@ -85,6 +88,55 @@ export const loginHandler = asyncHandler(async (req: Request, res: Response) => 
   });
 
   res.status(200).json({ accessToken });
+});
+
+
+export const registerHandler = asyncHandler(async (req: Request, res: Response) => {
+  const email = ensureEmail(req.body?.email, "email");
+  const password = ensureString(req.body?.password, "password");
+  const user = await createUser(email, password);
+
+  const accessToken = signAccessToken(user.userId, user.roles, user.email);
+  const refreshToken = signRefreshToken(user.userId);
+  const refreshExpiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
+  await storeRefreshToken(user.userId, refreshToken, refreshExpiresAt);
+
+  res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: true,
+    path: "/",
+    maxAge: REFRESH_TOKEN_TTL_MS,
+  });
+
+  res.status(201).json({
+    accessToken,
+    user: {
+      id: user.userId,
+      email: user.email,
+      displayName: ensureOptionalString(req.body?.fullName) ?? undefined,
+    },
+  });
+});
+
+export const forgotPasswordHandler = asyncHandler(async (req: Request, res: Response) => {
+  const email = ensureEmail(req.body?.email, "email");
+  const user = await getOrCreateUserByEmail(email);
+  const resetToken = randomUUID();
+  passwordResetTokens.set(resetToken, { userId: user.userId, expiresAt: Date.now() + 15 * 60 * 1000 });
+
+  res.status(200).json({ message: "If the account exists, a reset link has been sent.", resetToken });
+});
+
+export const resetPasswordHandler = asyncHandler(async (req: Request, res: Response) => {
+  const token = ensureString(req.body?.token, "token");
+  const state = passwordResetTokens.get(token);
+  if (!state || state.expiresAt < Date.now()) {
+    throw new AppError("Invalid or expired reset token", 400);
+  }
+
+  passwordResetTokens.delete(token);
+  res.status(200).json({ message: "Password reset token accepted. Complete reset in identity provider." });
 });
 
 export const logoutHandler = asyncHandler(async (req: Request, res: Response) => {

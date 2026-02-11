@@ -5,7 +5,7 @@ const EditorPage = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-[color:var(--muted)]">
+      <div className="rounded-xl border border-border bg-card p-6 text-muted-foreground">
         Loading editor workspace...
       </div>
     ),

@@ -10,7 +10,7 @@ export function ViewerPage() {
   const activeTab = useMemo(() => tabs.find((tab) => tab.id === activeTabId) ?? tabs[0], [activeTabId, tabs]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-[calc(100vh-var(--navbar-height)-3.25rem)] flex-1 flex-col rounded-xl border border-border bg-card p-2">
       <EditorOutput formatted={activeTab.content} />
     </div>
   );

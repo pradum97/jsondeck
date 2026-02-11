@@ -81,7 +81,6 @@ export function EditorPage() {
   const { resolvedTheme } = useTheme();
   const { tabs, activeTabId, updateTabContent, addTab, setDiagnostics, setOutput, addHistory, hydrate, markSaved } = useEditorStore();
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
-  const [lastSavedLabel, setLastSavedLabel] = useState("Autosave idle");
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [apiUrl, setApiUrl] = useState("");
   const [editorInstance, setEditorInstance] = useState<editor.IStandaloneCodeEditor | null>(null);
@@ -188,7 +187,6 @@ export function EditorPage() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ tabs, activeTabId }));
       const timestamp = new Date().toLocaleTimeString();
       markSaved(activeTabId, timestamp);
-      setLastSavedLabel(`Autosaved at ${timestamp}`);
     }, 900);
     return () => window.clearTimeout(timeout);
   }, [tabs, activeTabId, markSaved]);
@@ -200,7 +198,6 @@ export function EditorPage() {
     };
   }, [showLoadModal]);
 
-  const stats = useMemo(() => ({ lines: activeTab.content.split("\n").length, characters: activeTab.content.length }), [activeTab.content]);
   const parseError = useMemo(() => parseJsonError(activeTab.content), [activeTab.content]);
 
   const jumpToError = useCallback(() => {
@@ -212,33 +209,32 @@ export function EditorPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-700/70 bg-slate-950/60 p-2 shadow-[0_0_0_1px_rgba(56,189,248,0.08),0_12px_40px_rgba(2,6,23,0.45)] backdrop-blur">
-        <div className="flex items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <EditorTabs onAddTab={handleNewTab} />
-          </div>
-          <div className="ml-auto flex min-w-0 justify-end">
-            <EditorToolbar onFormat={handleFormat} onMinify={handleMinify} onPaste={() => void handlePaste()} onClear={handleClear} onCopy={() => void handleCopy()} onStringify={handleStringify} onLoadJson={() => setShowLoadModal(true)} />
-          </div>
+      <div className="flex h-full min-h-0 flex-1 flex-col rounded-2xl border border-slate-700/70 bg-slate-950/60 p-2 shadow-[0_0_0_1px_rgba(56,189,248,0.08),0_12px_40px_rgba(2,6,23,0.45)] backdrop-blur">
+        <div className="flex items-center gap-2 overflow-x-auto">
+          <EditorTabs onAddTab={handleNewTab} />
         </div>
 
-        <p className="mt-1 hidden truncate text-[10px] uppercase tracking-[0.2em] text-slate-400 lg:block">{activeTab.name} · {stats.lines} lines · {stats.characters} chars · {lastSavedLabel}</p>
+        <div className="mt-2">
+          <EditorToolbar onFormat={handleFormat} onMinify={handleMinify} onPaste={() => void handlePaste()} onClear={handleClear} onCopy={() => void handleCopy()} onStringify={handleStringify} onLoadJson={() => setShowLoadModal(true)} />
+        </div>
 
-        {parseError ? (
-          <motion.button
-            type="button"
-            onClick={jumpToError}
-            initial={{ y: -14, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -14, opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="mt-2 rounded-lg border border-rose-500/70 bg-rose-500/15 px-3 py-1.5 text-left text-xs text-rose-100"
-          >
-            Invalid JSON at line {parseError.line} column {parseError.column} — {parseError.message}
-          </motion.button>
-        ) : null}
+        <div className="mt-2">
+          {parseError ? (
+            <motion.button
+              type="button"
+              onClick={jumpToError}
+              initial={{ y: -14, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -14, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="w-full rounded-lg border border-rose-500/70 bg-rose-500/15 px-3 py-1.5 text-left text-xs text-rose-100"
+            >
+              Invalid JSON at line {parseError.line} column {parseError.column} — {parseError.message}
+            </motion.button>
+          ) : null}
+        </div>
 
-        <div className="mt-2 min-h-0 flex-1 overflow-hidden rounded-xl border border-cyan-500/20 bg-slate-950/45 shadow-[0_0_0_1px_rgba(34,211,238,0.07),0_18px_48px_rgba(2,6,23,0.45)]">
+        <div className="mt-2 min-h-0 flex-1 rounded-xl border border-cyan-500/20 bg-slate-950/45 shadow-[0_0_0_1px_rgba(34,211,238,0.07),0_18px_48px_rgba(2,6,23,0.45)]">
           <MonacoEditor
             height="100%"
             defaultLanguage="json"

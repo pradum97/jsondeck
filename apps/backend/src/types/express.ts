@@ -3,7 +3,7 @@ import type { AuthContext } from "../middleware/auth";
 
 declare module "express" {
   interface Request {
-    requestId: string;
+    requestId?: string;
     auth?: AuthContext;
     rawBody?: Buffer;
   }

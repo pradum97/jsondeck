@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -40,15 +42,44 @@ type EditorToolbarProps = {
 };
 
 export function EditorToolbar({ onFormat, onMinify, onPaste, onClear, onCopy, onStringify, onLoadJson }: EditorToolbarProps) {
+  const pathname = usePathname();
+
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2 md:flex-nowrap">
-      <ToolbarButton label="Format" onClick={onFormat} shortcut="Ctrl⇧F" variant="primary" />
-      <ToolbarButton label="Minify" onClick={onMinify} shortcut="Ctrl⇧M" />
-      <ToolbarButton label="Paste" onClick={onPaste} />
-      <ToolbarButton label="Clear" onClick={onClear} />
-      <ToolbarButton label="Copy" onClick={onCopy} />
-      <ToolbarButton label="Stringify" onClick={onStringify} />
-      <ToolbarButton label="Load JSON" onClick={onLoadJson} />
+    <div className="flex w-full items-center justify-between gap-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-2 md:flex-nowrap">
+        <ToolbarButton label="Format" onClick={onFormat} shortcut="Ctrl⇧F" variant="primary" />
+        <ToolbarButton label="Minify" onClick={onMinify} shortcut="Ctrl⇧M" />
+        <ToolbarButton label="Paste" onClick={onPaste} />
+        <ToolbarButton label="Clear" onClick={onClear} />
+        <ToolbarButton label="Copy" onClick={onCopy} />
+        <ToolbarButton label="Stringify" onClick={onStringify} />
+        <ToolbarButton label="Load JSON" onClick={onLoadJson} />
+      </div>
+
+      <div className="inline-flex h-7 shrink-0 items-center rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
+        <Link
+          href="/editor"
+          className={cn(
+            "inline-flex h-full items-center rounded-full px-2.5 transition",
+            pathname?.startsWith("/editor")
+              ? "bg-cyan-500/25 text-cyan-100"
+              : "text-slate-300 hover:text-slate-100"
+          )}
+        >
+          Editor
+        </Link>
+        <Link
+          href="/viewer"
+          className={cn(
+            "inline-flex h-full items-center rounded-full px-2.5 transition",
+            pathname?.startsWith("/viewer")
+              ? "bg-cyan-500/25 text-cyan-100"
+              : "text-slate-300 hover:text-slate-100"
+          )}
+        >
+          Viewer
+        </Link>
+      </div>
     </div>
   );
 }

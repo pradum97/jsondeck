@@ -17,7 +17,7 @@ function ToolbarButton({ label, onClick, shortcut, variant = "secondary" }: Tool
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] transition",
+        "inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition",
         variant === "primary"
           ? "border-cyan-300/70 bg-cyan-500/20 text-cyan-100 shadow-[0_0_16px_rgba(34,211,238,0.35)]"
           : "border-slate-700/80 bg-slate-900/60 text-slate-200 hover:border-slate-500"
@@ -41,7 +41,7 @@ type EditorToolbarProps = {
 
 export function EditorToolbar({ onFormat, onMinify, onPaste, onClear, onCopy, onStringify, onLoadJson }: EditorToolbarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-center justify-end gap-2 md:flex-nowrap">
       <ToolbarButton label="Format" onClick={onFormat} shortcut="Ctrl⇧F" variant="primary" />
       <ToolbarButton label="Minify" onClick={onMinify} shortcut="Ctrl⇧M" />
       <ToolbarButton label="Paste" onClick={onPaste} />

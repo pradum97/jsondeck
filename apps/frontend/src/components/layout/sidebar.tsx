@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils";
 import { publicEnv } from "@/lib/public-env";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import type { Route } from "next";
 
-const navItems = [
+const navItems: Array<{ label: string; href: Route }> = [
   { label: "Workspace", href: "/" },
   { label: "Editor", href: "/editor" },
   { label: "Transform", href: "/transform" },

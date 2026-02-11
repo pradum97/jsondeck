@@ -5,7 +5,7 @@ import { getToken } from "next-auth/jwt";
 const ADMIN_ROLES = new Set(["admin", "superadmin"]);
 
 const hasAdminRole = (token: Awaited<ReturnType<typeof getToken>>): boolean => {
-  if (!token) {
+  if (!token || typeof token === "string") {
     return false;
   }
 

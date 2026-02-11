@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { Session } from "next-auth";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
@@ -25,7 +26,7 @@ const resolveRole = (subscription: {
   return "pro";
 };
 
-const fetchSubscription = async (session: Awaited<ReturnType<typeof getServerSession>>) => {
+const fetchSubscription = async (session: Session | null) => {
   if (!session?.user?.id) {
     return null;
   }

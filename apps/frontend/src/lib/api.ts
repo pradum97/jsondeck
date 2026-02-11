@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosHeaders, AxiosInstance } from "axios";
 import { publicEnv } from "@/lib/public-env";
 
 const baseURL = publicEnv.apiUrl;
@@ -21,8 +21,9 @@ const refreshClient = axios.create({
 
 api.interceptors.request.use((config) => {
   if (accessToken) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    const headers = AxiosHeaders.from(config.headers);
+    headers.set("Authorization", `Bearer ${accessToken}`);
+    config.headers = headers;
   }
   return config;
 });
@@ -57,8 +58,9 @@ api.interceptors.response.use(
             reject(error);
             return;
           }
-          originalRequest.headers = originalRequest.headers ?? {};
-          originalRequest.headers.Authorization = `Bearer ${token}`;
+          const headers = AxiosHeaders.from(originalRequest.headers);
+          headers.set("Authorization", `Bearer ${token}`);
+          originalRequest.headers = headers;
           resolve(api(originalRequest));
         });
       });
@@ -73,8 +75,9 @@ api.interceptors.response.use(
       setAccessToken(refreshData.accessToken);
       processQueue(refreshData.accessToken);
 
-      originalRequest.headers = originalRequest.headers ?? {};
-      originalRequest.headers.Authorization = `Bearer ${refreshData.accessToken}`;
+      const headers = AxiosHeaders.from(originalRequest.headers);
+      headers.set("Authorization", `Bearer ${refreshData.accessToken}`);
+      originalRequest.headers = headers;
 
       return api(originalRequest);
     } catch (refreshError) {

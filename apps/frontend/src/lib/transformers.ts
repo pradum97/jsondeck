@@ -92,7 +92,7 @@ function mergeDescriptors(values: Descriptor[]): Descriptor {
   const [first] = values;
   if (values.every((item) => item.kind === first.kind)) {
     if (first.kind === "array") {
-      const elements = values.map((item) => (item.kind === "array" ? item.element : { kind: "unknown" }));
+      const elements = values.map((item): Descriptor => (item.kind === "array" ? item.element : { kind: "unknown" }));
       return { kind: "array", element: mergeDescriptors(elements) };
     }
     if (first.kind === "object") {
@@ -108,7 +108,7 @@ function mergeDescriptors(values: Descriptor[]): Descriptor {
           .filter((item): item is { kind: "object"; fields: Record<string, Descriptor> } =>
             item.kind === "object"
           )
-          .map((item) => item.fields[key] ?? { kind: "unknown" });
+          .map((item): Descriptor => item.fields[key] ?? { kind: "unknown" });
         fields[key] = mergeDescriptors(fieldValues);
       });
       return { kind: "object", fields };

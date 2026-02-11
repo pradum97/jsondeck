@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 type UserRole = "guest" | "user" | "pro" | "team" | "admin" | "superadmin";
 
-const navLinks: Array<{ href: string; label: string; roles: UserRole[] }> = [
+const navLinks: Array<{ href: Route; label: string; roles: UserRole[] }> = [
   { href: "/", label: "Home", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
   { href: "/editor", label: "Editor", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
   { href: "/transform", label: "Transform", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },

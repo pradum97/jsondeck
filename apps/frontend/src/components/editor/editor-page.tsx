@@ -15,6 +15,7 @@ import { EditorHistory } from "@/components/editor/editor-history";
 import { ResizableSplit } from "@/components/editor/resizable-split";
 import { cn } from "@/lib/utils";
 import { useJsonWorker } from "@/hooks/useJson-worker";
+import type { JsonDiagnostic, JsonDiagnosticStatus, JsonTransformResult } from "@/lib/json-tools";
 
 const STORAGE_KEY = "jsondeck.editor.tabs.v1";
 const REMOTE_TRANSFORM_THRESHOLD = 1200;
@@ -45,9 +46,9 @@ export function EditorPage() {
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
   const [lastSavedLabel, setLastSavedLabel] = useState("Autosave idle");
   const { format, minify, validate, buildDiff } = useJsonWorker();
-  const [formattedPreview, setFormattedPreview] = useState({
+  const [formattedPreview, setFormattedPreview] = useState<JsonTransformResult>({
     value: activeTab.content,
-    diagnostic: { status: "idle" as const, message: "Formatting preview loading..." },
+    diagnostic: { status: "idle", message: "Formatting preview loading..." },
   });
   const [diff, setDiff] = useState<Array<{ line: string; type: "same" | "added" | "removed" }>>([]);
 
@@ -96,7 +97,7 @@ export function EditorPage() {
     }
 
     return {
-      status: result.diagnostic.status,
+      status: result.diagnostic.status as JsonDiagnosticStatus,
       value: result.value,
       message: result.diagnostic.message,
     };
@@ -112,7 +113,7 @@ export function EditorPage() {
         input: activeTab.content,
         operation,
       });
-      const diagnostics = {
+      const diagnostics: JsonDiagnostic = {
         status: remote.status === "valid" ? "valid" : "error",
         message: remote.message,
       };

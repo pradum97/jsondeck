@@ -9,6 +9,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useMutation } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import type { editor } from "monaco-editor";
+import type * as MonacoNamespace from "monaco-editor";
 import { requestTransform, type TransformOperation } from "@/lib/transform-service";
 import { useEditorStore } from "@/store/editor-store";
 import { EditorTabs } from "@/components/editor/editor-tabs";
@@ -203,7 +204,10 @@ export function EditorPage() {
     };
   }, [showLoadModal]);
 
-  const parseError = useMemo(() => parseJsonError(activeTab.content), [activeTab.content]);
+  const parseError = useMemo(() => {
+    if (!activeTab.content.trim()) return null;
+    return parseJsonError(activeTab.content);
+  }, [activeTab.content]);
 
   const jumpToError = useCallback(() => {
     if (!parseError || !editorInstance) return;
@@ -214,7 +218,7 @@ export function EditorPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-border bg-card p-2 shadow-[0_0_0_1px_rgba(56,189,248,0.08),0_12px_40px_rgba(2,6,23,0.45)] backdrop-blur">
+      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-800 bg-card p-2 shadow-sm">
         <div className="flex items-center gap-2 overflow-x-auto pb-3">
           <EditorTabs onAddTab={handleNewTab} />
         </div>
@@ -240,19 +244,31 @@ export function EditorPage() {
         </div>
 
         <div className="relative flex-1 min-h-0 pt-3">
-          <div className={cn("absolute inset-0 rounded-xl border border-accent/30 bg-card/90 shadow-[0_0_0_1px_rgba(34,211,238,0.07),0_18px_48px_rgba(2,6,23,0.45)]", isViewerMode ? "hidden" : "block")}>
+          <div className={cn("absolute inset-0 rounded-xl border border-slate-800 bg-[#0b1220] shadow-sm", isViewerMode ? "hidden" : "block")}>
             <MonacoEditor
               height="100%"
               width="100%"
               defaultLanguage="json"
-              theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
+              theme={resolvedTheme === "light" ? "vs-light" : "jsondeck-navy"}
               value={activeTab.content}
+              beforeMount={(monaco: typeof MonacoNamespace) => {
+                monaco.editor.defineTheme("jsondeck-navy", {
+                  base: "vs-dark",
+                  inherit: true,
+                  rules: [],
+                  colors: {
+                    "editor.background": "#0b1220",
+                    "editorLineNumber.foreground": "#475569",
+                    "editorLineNumber.activeForeground": "#cbd5e1",
+                  },
+                });
+              }}
               onMount={(instance) => setEditorInstance(instance)}
               onChange={(nextValue) => updateTabContent(activeTab.id, nextValue ?? "")}
               options={{
                 minimap: { enabled: false },
-                fontSize: 13,
-                lineHeight: 20,
+                fontSize: 16,
+                lineHeight: 22,
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
                 smoothScrolling: true,
@@ -271,7 +287,7 @@ export function EditorPage() {
       <AnimatePresence>
         {showLoadModal ? (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-card/90 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-border bg-card p-5 shadow-2xl">
+            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-slate-800 bg-card p-5 shadow-sm">
               <h2 className="text-base font-semibold text-text">Load JSON from API URL</h2>
               <input
                 value={apiUrl}

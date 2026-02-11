@@ -11,8 +11,10 @@ const redis = new Redis({
 });
 
 const TRANSFORM_CACHE_TTL = Number(process.env.TRANSFORM_CACHE_TTL ?? 300);
+const TOOLS_CACHE_TTL = Number(process.env.TOOLS_CACHE_TTL ?? 300);
 const CONFIG_CACHE_TTL = Number(process.env.CONFIG_CACHE_TTL ?? 900);
 const SHARE_CACHE_TTL = Number(process.env.SHARE_CACHE_TTL ?? 86400);
+const ANALYTICS_CACHE_TTL = Number(process.env.ANALYTICS_CACHE_TTL ?? 180);
 
 const buildKey = (namespace: string, key: string) => `${namespace}:${key}`;
 
@@ -23,6 +25,17 @@ const safeJsonParse = <T>(value: string | null): T | null => {
   } catch {
     return null;
   }
+};
+
+const scanKeys = async (pattern: string): Promise<string[]> => {
+  const keys: string[] = [];
+  let cursor = "0";
+  do {
+    const [nextCursor, batch] = await redis.scan(cursor, "MATCH", pattern, "COUNT", "200");
+    cursor = nextCursor;
+    keys.push(...batch);
+  } while (cursor !== "0");
+  return keys;
 };
 
 export const cache = {
@@ -37,6 +50,15 @@ export const cache = {
   async del(key: string): Promise<void> {
     await redis.del(key);
   },
+  async delByPattern(pattern: string): Promise<void> {
+    const keys = await scanKeys(pattern);
+    if (keys.length > 0) {
+      await redis.del(...keys);
+    }
+  },
+  async ping(): Promise<string> {
+    return redis.ping();
+  },
 };
 
 export const transformCache = {
@@ -45,6 +67,15 @@ export const transformCache = {
   },
   async set<Result>(signature: string, result: Result): Promise<void> {
     await cache.set(buildKey("transform", signature), result, TRANSFORM_CACHE_TTL);
+  },
+};
+
+export const toolsCache = {
+  async get<Result>(signature: string): Promise<Result | null> {
+    return cache.get<Result>(buildKey("tools", signature));
+  },
+  async set<Result>(signature: string, result: Result): Promise<void> {
+    await cache.set(buildKey("tools", signature), result, TOOLS_CACHE_TTL);
   },
 };
 
@@ -66,8 +97,19 @@ export const shareLinkCache = {
   },
 };
 
+export const analyticsCache = {
+  async get<Result>(signature: string): Promise<Result | null> {
+    return cache.get<Result>(buildKey("analytics", signature));
+  },
+  async set<Result>(signature: string, result: Result): Promise<void> {
+    await cache.set(buildKey("analytics", signature), result, ANALYTICS_CACHE_TTL);
+  },
+};
+
 export const cacheKeys = {
   transform: (signature: string) => buildKey("transform", signature),
+  tools: (signature: string) => buildKey("tools", signature),
   config: (name: string) => buildKey("config", name),
   share: (shareId: string) => buildKey("share", shareId),
+  analytics: (signature: string) => buildKey("analytics", signature),
 };

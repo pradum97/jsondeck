@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEditorStore } from "@/store/editor-store";
 import { cn } from "@/lib/utils";
 
 type ToolbarButtonProps = {
@@ -23,10 +22,10 @@ function ToolbarButton({
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 rounded-2xl border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition",
+        "flex h-11 items-center gap-2 rounded-2xl border px-4 text-xs font-semibold uppercase tracking-[0.18em] transition",
         variant === "primary"
-          ? "border-cyan-400/60 bg-cyan-500/10 text-cyan-200 shadow-[0_0_16px_rgba(34,211,238,0.35)]"
-          : "border-slate-800/80 bg-slate-900/60 text-slate-200 hover:border-slate-700"
+          ? "border-cyan-400/70 bg-cyan-500/20 text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.35)]"
+          : "border-slate-700/80 bg-slate-900/60 text-slate-200 hover:border-slate-500"
       )}
     >
       <span>{label}</span>
@@ -42,33 +41,34 @@ function ToolbarButton({
 type EditorToolbarProps = {
   onFormat: () => void;
   onMinify: () => void;
-  onValidate: () => void;
+  onPaste: () => void;
+  onClear: () => void;
+  onCopy: () => void;
+  onStringify: () => void;
+  onLoadJson: () => void;
   onNewTab: () => void;
 };
 
 export function EditorToolbar({
   onFormat,
   onMinify,
-  onValidate,
+  onPaste,
+  onClear,
+  onCopy,
+  onStringify,
+  onLoadJson,
   onNewTab,
 }: EditorToolbarProps) {
-  const { diffView, toggleDiffView } = useEditorStore();
-
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <ToolbarButton
-        label="Format"
-        onClick={onFormat}
-        shortcut="Ctrl⇧F"
-        variant="primary"
-      />
+    <div className="flex flex-wrap items-center gap-2 md:gap-3">
+      <ToolbarButton label="Format" onClick={onFormat} shortcut="Ctrl⇧F" variant="primary" />
       <ToolbarButton label="Minify" onClick={onMinify} shortcut="Ctrl⇧M" />
-      <ToolbarButton label="Validate" onClick={onValidate} shortcut="Ctrl⇧V" />
+      <ToolbarButton label="Paste" onClick={onPaste} />
+      <ToolbarButton label="Clear" onClick={onClear} />
+      <ToolbarButton label="Copy" onClick={onCopy} />
+      <ToolbarButton label="Stringify" onClick={onStringify} />
+      <ToolbarButton label="Load JSON" onClick={onLoadJson} />
       <ToolbarButton label="New Tab" onClick={onNewTab} shortcut="Ctrl⌥N" />
-      <ToolbarButton
-        label={diffView ? "Diff: On" : "Diff: Off"}
-        onClick={toggleDiffView}
-      />
     </div>
   );
 }

@@ -7,7 +7,7 @@ export default async function BottomStickyAd() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 z-50 w-[min(90vw,720px)] -translate-x-1/2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm text-slate-700 shadow-lg">
+    <div className="fixed bottom-4 left-1/2 z-50 w-[min(90vw,720px)] -translate-x-1/2 rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm text-slate-700 shadow-lg">
       <div className="flex items-center justify-between gap-3">
         <span>Stay focused. Remove ads with a pro subscription.</span>
         <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">Sponsored</span>

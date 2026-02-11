@@ -1,16 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useMutation } from "@tanstack/react-query";
-import {
-  buildLineDiff,
-  formatJson,
-  minifyJson,
-  validateJson,
-} from "@/lib/json-tools";
 import { requestTransform, type TransformOperation } from "@/lib/transform-service";
 import { useEditorStore } from "@/store/editor-store";
 import { EditorTabs } from "@/components/editor/editor-tabs";
@@ -20,6 +14,7 @@ import { EditorSnippets } from "@/components/editor/editor-snippets";
 import { EditorHistory } from "@/components/editor/editor-history";
 import { ResizableSplit } from "@/components/editor/resizable-split";
 import { cn } from "@/lib/utils";
+import { useJsonWorker } from "@/hooks/useJson-worker";
 
 const STORAGE_KEY = "jsondeck.editor.tabs.v1";
 const REMOTE_TRANSFORM_THRESHOLD = 1200;
@@ -49,46 +44,67 @@ export function EditorPage() {
   } = useEditorStore();
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
   const [lastSavedLabel, setLastSavedLabel] = useState("Autosave idle");
+  const { format, minify, validate, buildDiff } = useJsonWorker();
+  const [formattedPreview, setFormattedPreview] = useState({
+    value: activeTab.content,
+    diagnostic: { status: "idle" as const, message: "Formatting preview loading..." },
+  });
+  const [diff, setDiff] = useState<Array<{ line: string; type: "same" | "added" | "removed" }>>([]);
 
-  const formattedPreview = useMemo(
-    () => formatJson(activeTab.content),
-    [activeTab.content]
-  );
-
-  const diff = useMemo(
-    () => buildLineDiff(activeTab.content, formattedPreview.value),
-    [activeTab.content, formattedPreview.value]
-  );
   const transformMutation = useMutation({
     mutationFn: async (payload: { input: string; operation: TransformOperation }) =>
       requestTransform(payload.input, payload.operation),
   });
 
-  const runTransform = async (operation: TransformOperation) => {
-    const runLocalTransform = () => {
-      if (operation === "validate") {
-        const result = validateJson(activeTab.content);
-        setDiagnostics(result);
-        return { status: result.status, value: "", message: result.message };
+  useEffect(() => {
+    let cancelled = false;
+
+    const runPreview = async () => {
+      const nextFormatted = await format(activeTab.content);
+      if (cancelled) {
+        return;
       }
-      const result =
-        operation === "minify"
-          ? minifyJson(activeTab.content)
-          : formatJson(activeTab.content);
-      setDiagnostics(result.diagnostic);
-      setOutput(result.value);
-      if (result.diagnostic.status === "valid") {
-        updateTabContent(activeTab.id, result.value);
+      setFormattedPreview(nextFormatted);
+      const nextDiff = await buildDiff(activeTab.content, nextFormatted.value);
+      if (!cancelled) {
+        setDiff(nextDiff);
       }
-      return {
-        status: result.diagnostic.status,
-        value: result.value,
-        message: result.diagnostic.message,
-      };
     };
 
+    runPreview();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab.content, buildDiff, format]);
+
+  const runLocalTransform = useCallback(async (operation: TransformOperation) => {
+    if (operation === "validate") {
+      const result = await validate(activeTab.content);
+      setDiagnostics(result);
+      return { status: result.status, value: "", message: result.message };
+    }
+
+    const result = operation === "minify"
+      ? await minify(activeTab.content)
+      : await format(activeTab.content);
+
+    setDiagnostics(result.diagnostic);
+    setOutput(result.value);
+    if (result.diagnostic.status === "valid") {
+      updateTabContent(activeTab.id, result.value);
+    }
+
+    return {
+      status: result.diagnostic.status,
+      value: result.value,
+      message: result.diagnostic.message,
+    };
+  }, [activeTab.content, activeTab.id, format, minify, setDiagnostics, setOutput, updateTabContent, validate]);
+
+  const runTransform = useCallback(async (operation: TransformOperation) => {
     if (activeTab.content.length < REMOTE_TRANSFORM_THRESHOLD) {
-      return runLocalTransform();
+      return runLocalTransform(operation);
     }
 
     try {
@@ -107,11 +123,11 @@ export function EditorPage() {
       }
       return { status: diagnostics.status, value: remote.output, message: remote.message };
     } catch {
-      return runLocalTransform();
+      return runLocalTransform(operation);
     }
-  };
+  }, [activeTab.content, activeTab.id, runLocalTransform, setDiagnostics, setOutput, transformMutation, updateTabContent]);
 
-  const handleFormat = async () => {
+  const handleFormat = useCallback(async () => {
     const result = await runTransform("format");
     addHistory({
       action: "Format",
@@ -121,9 +137,9 @@ export function EditorPage() {
           ? "Formatted JSON successfully."
           : "Formatting failed due to invalid JSON.",
     });
-  };
+  }, [addHistory, runTransform]);
 
-  const handleMinify = async () => {
+  const handleMinify = useCallback(async () => {
     const result = await runTransform("minify");
     addHistory({
       action: "Minify",
@@ -133,9 +149,9 @@ export function EditorPage() {
           ? "Minified JSON successfully."
           : "Minify failed due to invalid JSON.",
     });
-  };
+  }, [addHistory, runTransform]);
 
-  const handleValidate = async () => {
+  const handleValidate = useCallback(async () => {
     const result = await runTransform("validate");
     addHistory({
       action: "Validate",
@@ -145,27 +161,21 @@ export function EditorPage() {
           ? "Validation passed."
           : "Validation failed with errors.",
     });
-  };
+  }, [addHistory, runTransform]);
 
-  const handleNewTab = () => {
+  const handleNewTab = useCallback(() => {
     addTab();
     addHistory({
       action: "New Tab",
       timestamp: new Date().toLocaleTimeString(),
       summary: "Opened a fresh JSON workspace tab.",
     });
-  };
+  }, [addHistory, addTab]);
 
-  useHotkeys("ctrl+shift+f", handleFormat, { preventDefault: true }, [
-    activeTab.content,
-  ]);
-  useHotkeys("ctrl+shift+m", handleMinify, { preventDefault: true }, [
-    activeTab.content,
-  ]);
-  useHotkeys("ctrl+shift+v", handleValidate, { preventDefault: true }, [
-    activeTab.content,
-  ]);
-  useHotkeys("ctrl+alt+n", handleNewTab, { preventDefault: true }, []);
+  useHotkeys("ctrl+shift+f", handleFormat, { preventDefault: true }, [handleFormat]);
+  useHotkeys("ctrl+shift+m", handleMinify, { preventDefault: true }, [handleMinify]);
+  useHotkeys("ctrl+shift+v", handleValidate, { preventDefault: true }, [handleValidate]);
+  useHotkeys("ctrl+alt+n", handleNewTab, { preventDefault: true }, [handleNewTab]);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);

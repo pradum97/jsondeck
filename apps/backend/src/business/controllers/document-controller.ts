@@ -3,6 +3,17 @@ import { asyncHandler } from "../../utils/async-handler";
 import { ensureOptionalString, ensureString } from "../validation";
 import { createDocument, deleteDocument, getDocument, listDocuments, updateDocument } from "../services/document-service";
 
+const parsePositiveInteger = (value: unknown): number | undefined => {
+  if (typeof value !== "string" || value.length === 0) {
+    return undefined;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return undefined;
+  }
+  return parsed;
+};
+
 export const createDocumentHandler = asyncHandler(async (req: Request, res: Response) => {
   const projectId = ensureString(req.body?.projectId, "projectId");
   const title = ensureString(req.body?.title, "title");
@@ -13,7 +24,9 @@ export const createDocumentHandler = asyncHandler(async (req: Request, res: Resp
 
 export const listDocumentsHandler = asyncHandler(async (req: Request, res: Response) => {
   const projectId = ensureString(req.query.projectId, "projectId");
-  const documents = await listDocuments(projectId, req.auth?.subject ?? "");
+  const page = parsePositiveInteger(req.query.page);
+  const limit = parsePositiveInteger(req.query.limit);
+  const documents = await listDocuments(projectId, req.auth?.subject ?? "", { page, limit });
   res.status(200).json({ documents });
 });
 

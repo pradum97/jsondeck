@@ -1,6 +1,7 @@
 "use client";
 
-import { JsonDiffLine } from "@/lib/json-tools";
+import { memo } from "react";
+import type { JsonDiffLine } from "@/lib/json-tools";
 import { useEditorStore } from "@/store/editor-store";
 import { cn } from "@/lib/utils";
 
@@ -9,8 +10,10 @@ type EditorOutputProps = {
   diff: JsonDiffLine[];
 };
 
-export function EditorOutput({ formatted, diff }: EditorOutputProps) {
-  const { diagnostics, diffView, output } = useEditorStore();
+function EditorOutputBase({ formatted, diff }: EditorOutputProps) {
+  const diagnostics = useEditorStore((state) => state.diagnostics);
+  const diffView = useEditorStore((state) => state.diffView);
+  const output = useEditorStore((state) => state.output);
   const displayText = output || formatted;
 
   return (
@@ -70,3 +73,5 @@ export function EditorOutput({ formatted, diff }: EditorOutputProps) {
     </div>
   );
 }
+
+export const EditorOutput = memo(EditorOutputBase);

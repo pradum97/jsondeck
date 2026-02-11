@@ -1,11 +1,17 @@
-export default function ApiTesterPage() {
-  return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
-      <p className="text-xs uppercase tracking-[0.3em] text-slate-500">API Tester</p>
-      <h1 className="text-3xl font-semibold text-slate-100">API testing console coming soon.</h1>
-      <p className="max-w-xl text-sm text-slate-400">
-        This space will house request builders, response previews, and saved environments.
-      </p>
-    </div>
-  );
+import dynamic from "next/dynamic";
+
+const ApiTesterPage = dynamic(
+  () => import("@/components/api-tester/api-tester-page").then((mod) => mod.ApiTesterPage),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-3xl border border-slate-800/70 bg-slate-950/50 p-6 text-slate-300">
+        Loading API tester...
+      </div>
+    ),
+  }
+);
+
+export default function ApiTesterRoute() {
+  return <ApiTesterPage />;
 }

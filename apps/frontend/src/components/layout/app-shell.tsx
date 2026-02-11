@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { Navbar } from "@/components/layout/navbar";
 import { FirstVisitModal } from "@/components/layout/first-visit-modal";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -17,15 +16,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-x-clip text-slate-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(94,234,212,0.08),_transparent_55%)]" />
+    <div className="relative min-h-screen overflow-x-clip bg-bg text-text">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_9%,transparent),_transparent_52%)]" />
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
         <motion.section
-          className={cn(
-            "glass relative mx-2 mb-2 mt-1 flex flex-1 min-h-0 flex-col rounded-2xl border border-slate-800/65 p-2 shadow-2xl sm:mx-3 sm:mb-3 sm:p-3",
-            "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-slate-900/45 before:to-slate-950/25 before:content-['']"
-          )}
+          className="glass relative mx-2 mb-2 mt-1 flex min-h-0 flex-1 flex-col rounded-xl border border-border bg-section p-2 shadow-md sm:mx-3 sm:mb-3 sm:p-3"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}

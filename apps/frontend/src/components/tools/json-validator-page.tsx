@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
@@ -30,6 +31,7 @@ function parseError(input: string): ValidationIssue[] {
 }
 
 export function JsonValidatorPage() {
+  const { resolvedTheme } = useTheme();
   const [value, setValue] = useState("{\n  \"workspace\": \"jsondeck\"\n}");
   const [result, setResult] = useState("Ready to validate JSON.");
   const issues = useMemo(() => parseError(value), [value]);
@@ -77,17 +79,17 @@ export function JsonValidatorPage() {
   return (
     <main className="flex h-full flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
-        <button type="button" onClick={validate} className="h-10 rounded-xl bg-cyan-500/25 px-4 text-xs uppercase tracking-[0.2em] text-cyan-100">Validate JSON</button>
-        <button type="button" onClick={format} className="h-10 rounded-xl border border-slate-700 px-4 text-xs uppercase tracking-[0.2em] text-slate-200">Format</button>
-        <button type="button" onClick={() => void navigator.clipboard.writeText(result)} className="h-10 rounded-xl border border-slate-700 px-4 text-xs uppercase tracking-[0.2em] text-slate-200">Copy Result</button>
-        <span className="text-sm text-slate-300">{result}</span>
+        <button type="button" onClick={validate} className="h-10 rounded-xl bg-accent-soft px-4 text-xs uppercase tracking-[0.2em] text-accent">Validate JSON</button>
+        <button type="button" onClick={format} className="h-10 rounded-xl border border-border px-4 text-xs uppercase tracking-[0.2em] text-secondary">Format</button>
+        <button type="button" onClick={() => void navigator.clipboard.writeText(result)} className="h-10 rounded-xl border border-border px-4 text-xs uppercase tracking-[0.2em] text-secondary">Copy Result</button>
+        <span className="text-sm text-secondary">{result}</span>
       </div>
 
-      <div className="h-[62vh] min-h-[360px] overflow-hidden rounded-2xl border border-slate-800/70">
+      <div className="h-[62vh] min-h-[360px] overflow-hidden rounded-2xl border border-border">
         <MonacoEditor
           height="100%"
           defaultLanguage="json"
-          theme="vs-dark"
+          theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
           value={value}
           onChange={(nextValue) => setValue(nextValue ?? "")}
           options={{ minimap: { enabled: false }, automaticLayout: true, scrollBeyondLastLine: false }}
@@ -98,10 +100,10 @@ export function JsonValidatorPage() {
         />
       </div>
 
-      <div className="rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3">
-        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Error list</p>
-        <ul className="mt-2 space-y-1 text-sm text-rose-300">
-          {issues.length === 0 ? <li className="text-emerald-300">No errors found.</li> : issues.map((issue) => (
+      <div className="rounded-2xl border border-border bg-card p-3">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted">Error list</p>
+        <ul className="mt-2 space-y-1 text-sm text-error">
+          {issues.length === 0 ? <li className="text-success">No errors found.</li> : issues.map((issue) => (
             <li key={`${issue.line}-${issue.column}`}>Line {issue.line}, Col {issue.column}: {issue.message}</li>
           ))}
         </ul>

@@ -27,9 +27,9 @@ export default function SettingsPage() {
   return (
     <div className="space-y-10">
       <header className="space-y-3">
-        <p className="text-sm uppercase tracking-[0.4em] text-teal-300/70">Settings</p>
-        <h1 className="text-3xl font-semibold text-white">Identity & access control</h1>
-        <p className="text-sm text-slate-300">
+        <p className="text-sm uppercase tracking-[0.4em] text-muted">Settings</p>
+        <h1 className="text-3xl font-semibold text-text">Identity & access control</h1>
+        <p className="text-sm text-secondary">
           Secure JSONDeck with enterprise-grade authentication, role routing, and provider controls.
         </p>
       </header>

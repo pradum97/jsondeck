@@ -54,7 +54,7 @@ function highlightText(content: string, query: string) {
   return (
     <>
       {parts.map((part, index) => (
-        <span key={`${part}-${index}`} className={part.toLowerCase() === query.toLowerCase() ? "rounded bg-cyan-400/20 text-cyan-100" : undefined}>
+        <span key={`${part}-${index}`} className={part.toLowerCase() === query.toLowerCase() ? "rounded bg-accent-soft text-accent" : undefined}>
           {part}
         </span>
       ))}
@@ -72,11 +72,11 @@ function TreeNode({ path, label, value, search, collapseDepth, level }: TreeNode
 
     return (
       <div className="pl-3">
-        <button type="button" onClick={() => setExpanded((prev) => !prev)} className={cn("text-left text-xs transition-colors", match ? "text-cyan-100" : "text-slate-300 hover:text-slate-100")}>
+        <button type="button" onClick={() => setExpanded((prev) => !prev)} className={cn("text-left text-xs transition-colors", match ? "text-accent" : "text-secondary hover:text-text")}>
           {expanded ? "▼" : "▶"} {highlightText(label, search)}
         </button>
         {expanded ? (
-          <div className="border-l border-slate-700/50 pl-2">
+          <div className="border-l border-border/50 pl-2">
             {entries.map(([childLabel, childValue]) => (
               <TreeNode key={`${path}.${childLabel}`} path={`${path}.${childLabel}`} label={childLabel} value={childValue} search={search} collapseDepth={collapseDepth} level={level + 1} />
             ))}
@@ -87,14 +87,14 @@ function TreeNode({ path, label, value, search, collapseDepth, level }: TreeNode
   }
 
   return (
-    <div className={cn("flex items-center gap-2 pl-3 text-xs", match ? "text-cyan-100" : "text-slate-300")}>
-      <span className="text-slate-500">{highlightText(label, search)}:</span>
+    <div className={cn("flex items-center gap-2 pl-3 text-xs", match ? "text-accent" : "text-secondary")}>
+      <span className="text-muted">{highlightText(label, search)}:</span>
       <span>{highlightText(String(value), search)}</span>
-      <span className="rounded-full border border-slate-700/80 px-1.5 py-0 text-[9px] uppercase tracking-[0.12em] text-slate-400">{value === null ? "null" : typeof value}</span>
-      <button type="button" className="ml-1 rounded border border-slate-700 px-2 py-0.5 text-[10px] transition-colors hover:border-cyan-400/60" onClick={() => void navigator.clipboard.writeText(path)}>
+      <span className="rounded-full border border-border px-1.5 py-0 text-[9px] uppercase tracking-[0.12em] text-muted">{value === null ? "null" : typeof value}</span>
+      <button type="button" className="ml-1 rounded border border-border px-2 py-0.5 text-[10px] transition-colors hover:border-accent" onClick={() => void navigator.clipboard.writeText(path)}>
         path
       </button>
-      <button type="button" className="rounded border border-slate-700 px-2 py-0.5 text-[10px] transition-colors hover:border-cyan-400/60" onClick={() => void navigator.clipboard.writeText(JSON.stringify(value))}>
+      <button type="button" className="rounded border border-border px-2 py-0.5 text-[10px] transition-colors hover:border-accent" onClick={() => void navigator.clipboard.writeText(JSON.stringify(value))}>
         node
       </button>
     </div>
@@ -130,25 +130,25 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
   const visibleRawLines = filteredRawLines.slice(0, VIRTUAL_WINDOW * 2);
 
   return (
-    <div className="flex h-full min-h-0 flex-col rounded-xl border border-slate-700/70 bg-slate-950/70 shadow-inner">
-      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1.5 border-b border-slate-700/70 bg-slate-950/90 px-2.5 py-2 backdrop-blur">
-        <p className={cn("mr-auto text-xs font-semibold", diagnostics.status === "error" ? "text-rose-300" : "text-emerald-300")}>{diagnostics.message}</p>
+    <div className="flex h-full min-h-0 flex-col rounded-xl border border-border bg-card shadow-inner">
+      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1.5 border-b border-border bg-card/95 px-2.5 py-2 backdrop-blur">
+        <p className={cn("mr-auto text-xs font-semibold", diagnostics.status === "error" ? "text-error" : "text-success")}>{diagnostics.message}</p>
         {(["raw", "tree", "table"] as const).map((tab) => (
-          <motion.button key={tab} type="button" onClick={() => setView(tab)} whileHover={{ y: -1 }} className={cn("h-7 rounded-full border px-2.5 text-[10px] uppercase tracking-[0.16em] transition", view === tab ? "border-cyan-400/60 bg-cyan-500/20 text-cyan-100" : "border-slate-700 text-slate-300 hover:border-slate-500")}>
+          <motion.button key={tab} type="button" onClick={() => setView(tab)} whileHover={{ y: -1 }} className={cn("h-7 rounded-full border px-2.5 text-[10px] uppercase tracking-[0.16em] transition", view === tab ? "border-accent bg-accent-soft text-accent" : "border-border text-secondary hover:border-accent")}>
             {tab}
           </motion.button>
         ))}
       </div>
 
-      <div className="grid gap-1.5 border-b border-slate-800/80 px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-4">
-        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="h-8 rounded-lg border border-slate-700/80 bg-slate-900/60 px-2.5 text-xs text-slate-200" />
-        <input value={keyFilter} onChange={(event) => setKeyFilter(event.target.value)} placeholder="Filter key" className="h-8 rounded-lg border border-slate-700/80 bg-slate-900/60 px-2.5 text-xs text-slate-200" />
-        <input value={valueFilter} onChange={(event) => setValueFilter(event.target.value)} placeholder="Filter value" className="h-8 rounded-lg border border-slate-700/80 bg-slate-900/60 px-2.5 text-xs text-slate-200" />
+      <div className="grid gap-1.5 border-b border-border px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-4">
+        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="h-8 rounded-lg border border-border bg-section px-2.5 text-xs text-secondary" />
+        <input value={keyFilter} onChange={(event) => setKeyFilter(event.target.value)} placeholder="Filter key" className="h-8 rounded-lg border border-border bg-section px-2.5 text-xs text-secondary" />
+        <input value={valueFilter} onChange={(event) => setValueFilter(event.target.value)} placeholder="Filter value" className="h-8 rounded-lg border border-border bg-section px-2.5 text-xs text-secondary" />
         <div className="flex items-center gap-1.5">
-          <button type="button" onClick={() => setCollapseDepth(0)} className="h-8 rounded-lg border border-slate-700 px-2 text-[10px] uppercase tracking-[0.12em] text-slate-200 transition hover:border-slate-500">Expand</button>
-          <button type="button" onClick={() => setCollapseDepth(1)} className="h-8 rounded-lg border border-slate-700 px-2 text-[10px] uppercase tracking-[0.12em] text-slate-200 transition hover:border-slate-500">Depth 1</button>
-          <button type="button" onClick={() => setCollapseDepth(2)} className="h-8 rounded-lg border border-slate-700 px-2 text-[10px] uppercase tracking-[0.12em] text-slate-200 transition hover:border-slate-500">Depth 2</button>
-          <button type="button" onClick={() => void navigator.clipboard.writeText(displayText)} className="h-8 rounded-lg border border-slate-700 px-2 text-[10px] uppercase tracking-[0.12em] text-slate-200 transition hover:border-slate-500">Copy</button>
+          <button type="button" onClick={() => setCollapseDepth(0)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Expand</button>
+          <button type="button" onClick={() => setCollapseDepth(1)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Depth 1</button>
+          <button type="button" onClick={() => setCollapseDepth(2)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Depth 2</button>
+          <button type="button" onClick={() => void navigator.clipboard.writeText(displayText)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Copy</button>
         </div>
       </div>
 
@@ -156,21 +156,21 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={view} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }} className="h-full">
             {view === "raw" ? (
-              <pre className="h-full overflow-auto whitespace-pre-wrap rounded-xl border border-slate-800/70 bg-slate-950/70 p-2.5 font-mono text-xs leading-relaxed text-slate-300">
+              <pre className="h-full overflow-auto whitespace-pre-wrap rounded-xl border border-border bg-card p-2.5 font-mono text-xs leading-relaxed text-secondary">
                 {visibleRawLines.map((line, index) => <div key={`${index}-${line}`}>{highlightText(line, search)}</div>)}
               </pre>
             ) : null}
 
             {view === "tree" ? parsed ? (
-              <div className="h-full overflow-auto rounded-xl border border-slate-800/70 bg-slate-950/70 p-2.5 font-mono">
+              <div className="h-full overflow-auto rounded-xl border border-border bg-card p-2.5 font-mono">
                 <TreeNode path="$" label="$" value={parsed} search={search} collapseDepth={collapseDepth} level={0} />
               </div>
-            ) : <p className="text-sm text-slate-400">Valid JSON is required for tree view.</p> : null}
+            ) : <p className="text-sm text-muted">Valid JSON is required for tree view.</p> : null}
 
             {view === "table" ? parsed ? (
-              <div className="h-full overflow-auto rounded-xl border border-slate-800/70 bg-slate-950/70 p-2.5">
-                <table className="w-full text-left text-xs text-slate-200">
-                  <thead className="sticky top-0 bg-slate-950/95 text-slate-400">
+              <div className="h-full overflow-auto rounded-xl border border-border bg-card p-2.5">
+                <table className="w-full text-left text-xs text-secondary">
+                  <thead className="sticky top-0 bg-card text-muted">
                     <tr>
                       <th className="pb-2">Path</th>
                       <th className="pb-2">Type</th>
@@ -180,20 +180,20 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
                   </thead>
                   <tbody>
                     {visibleRows.map((row) => (
-                      <tr key={row.path} className="border-t border-slate-800/60 align-top">
-                        <td className="py-1 pr-2 font-mono text-cyan-200">{highlightText(row.path, search)}</td>
-                        <td className="py-1 pr-2"><span className="rounded-full border border-slate-700/80 px-1.5 py-0 text-[9px] uppercase tracking-[0.1em] text-slate-300">{row.type}</span></td>
+                      <tr key={row.path} className="border-t border-border align-top">
+                        <td className="py-1 pr-2 font-mono text-accent">{highlightText(row.path, search)}</td>
+                        <td className="py-1 pr-2"><span className="rounded-full border border-border px-1.5 py-0 text-[9px] uppercase tracking-[0.1em] text-secondary">{row.type}</span></td>
                         <td className="py-1">{highlightText(row.value, search)}</td>
                         <td className="py-1">
-                          <button type="button" className="rounded border border-slate-700 px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-slate-300 transition hover:border-cyan-400/60" onClick={() => void navigator.clipboard.writeText(row.path)}>Path</button>
+                          <button type="button" className="rounded border border-border px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent" onClick={() => void navigator.clipboard.writeText(row.path)}>Path</button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                {filteredRows.length > visibleRows.length ? <p className="pt-2 text-[11px] text-slate-500">Showing first {visibleRows.length} rows for performance.</p> : null}
+                {filteredRows.length > visibleRows.length ? <p className="pt-2 text-[11px] text-muted">Showing first {visibleRows.length} rows for performance.</p> : null}
               </div>
-            ) : <p className="text-sm text-slate-400">Valid JSON is required for table view.</p> : null}
+            ) : <p className="text-sm text-muted">Valid JSON is required for table view.</p> : null}
           </motion.div>
         </AnimatePresence>
       </div>

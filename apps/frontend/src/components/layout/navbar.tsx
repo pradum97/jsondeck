@@ -30,10 +30,7 @@ export function Navbar() {
     }
   }, []);
 
-  const visibleLinks = useMemo(
-    () => navLinks.filter((link) => link.roles.includes(role)),
-    [role]
-  );
+  const visibleLinks = useMemo(() => navLinks.filter((link) => link.roles.includes(role)), [role]);
 
   const handleToggle = () => {
     if (!mounted) return;
@@ -43,18 +40,18 @@ export function Navbar() {
   const isLightTheme = mounted && resolvedTheme === "light";
 
   return (
-    <nav className="glass sticky top-2 z-40 mx-2 mt-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800/80 px-3 py-2 sm:mx-3 sm:mt-2 sm:px-4 sm:py-2.5">
-      <Link href="/" className="flex shrink-0 items-center gap-2 text-base font-semibold text-slate-100 sm:text-lg">
-        <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
+    <nav className="glass sticky top-2 z-40 mx-2 mt-2 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border px-3 py-2 shadow-sm sm:mx-3 sm:px-4 sm:py-2.5">
+      <Link href="/" className="flex shrink-0 items-center gap-2 text-base font-semibold text-text sm:text-lg">
+        <span className="h-2 w-2 rounded-full bg-accent" />
         JSONDeck
       </Link>
 
-      <div className="order-3 flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-1 text-sm text-slate-200 sm:order-2 sm:w-auto sm:flex-wrap sm:justify-center sm:gap-2 sm:overflow-visible sm:pb-0">
+      <div className="order-3 flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-1 text-sm text-secondary sm:order-2 sm:w-auto sm:flex-wrap sm:justify-center sm:gap-2 sm:overflow-visible sm:pb-0">
         {visibleLinks.map((link) => (
           <motion.div key={link.href} whileHover={{ y: -1 }} transition={{ duration: 0.2 }}>
             <Link
               href={link.href}
-              className="block whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-200 transition-colors duration-200 hover:bg-slate-800/70 hover:text-emerald-200"
+              className="block whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-secondary hover:bg-accent-soft hover:text-accent"
             >
               {link.label}
             </Link>
@@ -69,8 +66,8 @@ export function Navbar() {
         onClick={handleToggle}
         className="order-2 inline-flex h-8 items-center gap-2 rounded-full px-3 text-xs sm:order-3"
       >
-        <span aria-hidden="true">{isLightTheme ? "🌙" : "☀️"}</span>
-        <span>{isLightTheme ? "Dark" : "Light"} Mode</span>
+        <span aria-hidden="true">{isLightTheme ? "🌙" : "☀"}</span>
+        <span>{isLightTheme ? "Dark" : "Light"}</span>
       </Button>
     </nav>
   );

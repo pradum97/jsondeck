@@ -8,8 +8,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variantStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
   default:
-    "bg-emerald-500/10 text-emerald-200 border-emerald-400/60 hover:border-emerald-300/80 hover:text-emerald-100",
-  ghost: "bg-slate-900/60 text-slate-200 border-slate-700/70 hover:border-emerald-400/60 hover:text-emerald-200",
+    "bg-accent text-white border-accent hover:bg-accent-hover hover:border-accent-hover",
+  ghost: "bg-card text-secondary border-border hover:border-accent hover:text-accent",
 };
 
 const sizeStyles: Record<NonNullable<ButtonProps["size"]>, string> = {
@@ -22,7 +22,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     <button
       ref={ref}
       className={cn(
-        "glass rounded-full border font-semibold uppercase tracking-[0.2em] transition",
+        "rounded-full border font-semibold uppercase tracking-[0.2em] shadow-sm transition-colors duration-200",
         variantStyles[variant],
         sizeStyles[size],
         className

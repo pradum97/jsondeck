@@ -12,7 +12,7 @@ export function ToolCard({ title, description, children, className }: ToolCardPr
   return (
     <motion.section
       className={cn(
-        "rounded-3xl border border-slate-800/70 bg-slate-950/60 p-6 shadow-lg",
+        "rounded-3xl border border-border bg-card p-6 shadow-lg",
         className
       )}
       initial={{ opacity: 0, y: 12 }}
@@ -21,8 +21,8 @@ export function ToolCard({ title, description, children, className }: ToolCardPr
       transition={{ duration: 0.3 }}
     >
       <div className="mb-4 space-y-2">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
-        <p className="text-sm text-slate-400">{description}</p>
+        <h3 className="text-lg font-semibold text-text">{title}</h3>
+        <p className="text-sm text-muted">{description}</p>
       </div>
       {children}
     </motion.section>

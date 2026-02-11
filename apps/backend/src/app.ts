@@ -16,6 +16,7 @@ import { requestId } from "./middleware/request-id";
 import { logger as httpLogger } from "./middlewares/logger";
 import { rateLimiter } from "./middlewares/rate-limit";
 import { validationMiddleware } from "./middlewares/validate";
+import { cache } from "./services/cache";
 
 export const createApp = (): express.Express => {
   const app = express();
@@ -58,6 +59,25 @@ export const createApp = (): express.Express => {
       env: env.nodeEnv,
       timestamp: new Date().toISOString(),
     });
+  });
+
+  app.get("/health/redis", async (_req, res) => {
+    try {
+      const status = await cache.ping();
+      res.status(200).json({
+        status: status.toLowerCase() === "pong" ? "ok" : "degraded",
+        redis: status,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Redis health check failed";
+      res.status(503).json({
+        status: "down",
+        redis: "unavailable",
+        message,
+        timestamp: new Date().toISOString(),
+      });
+    }
   });
 
   app.use("/api/auth", authRouter);

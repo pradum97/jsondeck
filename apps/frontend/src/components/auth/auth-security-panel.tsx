@@ -28,7 +28,7 @@ export function AuthSecurityPanel({ userLabel, roles, providers }: AuthSecurityP
         {providers.map((provider) => (
           <motion.div
             key={provider.name}
-            className="rounded-2xl border border-border bg-card p-4 shadow-lg"
+            className="rounded-2xl border border-border bg-card p-4 shadow-sm"
             whileHover={{ y: -4 }}
             transition={{ duration: 0.2 }}
           >

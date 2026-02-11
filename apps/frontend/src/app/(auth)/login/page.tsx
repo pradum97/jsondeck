@@ -66,7 +66,7 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={() => signIn("google", { callbackUrl })}
-          className="inline-flex items-center justify-center gap-2 rounded border border-neutral-300 px-4 py-2 text-sm font-semibold"
+          className="inline-flex items-center justify-center gap-2 rounded border border-neutral-600 bg-neutral-900/50 px-4 py-2 text-sm font-semibold text-neutral-100"
         >
           <span aria-hidden="true" className="inline-flex h-4 w-4 items-center justify-center">
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -81,15 +81,15 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={() => signIn("github", { callbackUrl })}
-          className="rounded border border-neutral-300 px-4 py-2 text-sm font-semibold"
+          className="rounded border border-neutral-600 bg-neutral-900/50 px-4 py-2 text-sm font-semibold text-neutral-100"
         >
           Continue with GitHub
         </button>
       </div>
-      <div className="flex items-center gap-3 text-xs uppercase text-neutral-400">
-        <span className="h-px flex-1 bg-neutral-200" />
+      <div className="flex items-center gap-3 text-xs uppercase text-neutral-300">
+        <span className="h-px flex-1 bg-neutral-700" />
         <span>Email OTP</span>
-        <span className="h-px flex-1 bg-neutral-200" />
+        <span className="h-px flex-1 bg-neutral-700" />
       </div>
       <form onSubmit={handleOtpSignIn} className="flex flex-col gap-4">
         <label className="flex flex-col gap-2">
@@ -99,7 +99,7 @@ export default function LoginPage() {
             type="email"
             required
             autoComplete="email"
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rounded border border-neutral-600 bg-neutral-900/50 px-3 py-2 text-neutral-100"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
@@ -112,7 +112,7 @@ export default function LoginPage() {
             required
             inputMode="numeric"
             autoComplete="one-time-code"
-            className="rounded border border-neutral-300 px-3 py-2"
+            className="rounded border border-neutral-600 bg-neutral-900/50 px-3 py-2 text-neutral-100"
             value={otp}
             onChange={(event) => setOtp(event.target.value)}
           />
@@ -120,7 +120,7 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={handleSendOtp}
-          className="rounded border border-neutral-300 px-4 py-2 text-sm font-semibold"
+          className="rounded border border-neutral-600 bg-neutral-900/50 px-4 py-2 text-sm font-semibold text-neutral-100"
         >
           Send OTP
         </button>
@@ -132,7 +132,7 @@ export default function LoginPage() {
           {isPending ? "Signing in..." : "Sign in with OTP"}
         </button>
       </form>
-      {message ? <p className="text-sm text-neutral-600">{message}</p> : null}
+      {message ? <p className="text-sm text-neutral-300">{message}</p> : null}
     </main>
   );
 }

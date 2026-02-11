@@ -22,7 +22,7 @@ export function PlanCard({ plan, active, onSelect }: PlanCardProps) {
   return (
     <motion.div
       className={cn(
-        "flex h-full flex-col justify-between rounded-2xl border p-6 shadow-lg",
+        "flex h-full flex-col justify-between rounded-2xl border p-6 shadow-sm",
         plan.highlighted
           ? "border-teal-400/70 bg-gradient-to-br from-teal-500/10 via-slate-950/90 to-slate-950/70"
           : "border-slate-800/80 bg-slate-950/70",

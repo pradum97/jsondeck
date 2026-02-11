@@ -19,7 +19,7 @@ export function AdPreferencePanel({ initialEnabled, adProfile }: AdPreferencePan
         <p className="text-sm text-slate-300">Control ads across the workspace and surface only trusted partners.</p>
       </header>
       <motion.div
-        className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-lg"
+        className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-sm"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}

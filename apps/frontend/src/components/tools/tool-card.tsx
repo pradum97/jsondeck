@@ -12,7 +12,7 @@ export function ToolCard({ title, description, children, className }: ToolCardPr
   return (
     <motion.section
       className={cn(
-        "rounded-3xl border border-border bg-card p-6 shadow-lg",
+        "rounded-3xl border border-border bg-card p-6 shadow-sm",
         className
       )}
       initial={{ opacity: 0, y: 12 }}

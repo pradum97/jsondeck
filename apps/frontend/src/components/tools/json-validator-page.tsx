@@ -13,6 +13,10 @@ type ValidationIssue = {
 };
 
 function parseError(input: string): ValidationIssue[] {
+  if (!input.trim()) {
+    return [];
+  }
+
   try {
     JSON.parse(input);
     return [];
@@ -92,7 +96,7 @@ export function JsonValidatorPage() {
           theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
           value={value}
           onChange={(nextValue) => setValue(nextValue ?? "")}
-          options={{ minimap: { enabled: false }, automaticLayout: true, scrollBeyondLastLine: false }}
+          options={{ minimap: { enabled: false }, fontSize: 16, lineHeight: 22, automaticLayout: true, scrollBeyondLastLine: false }}
           onMount={(editor, monaco) => {
             monacoRef.current = editor;
             monacoApiRef.current = monaco;

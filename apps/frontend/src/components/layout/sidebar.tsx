@@ -31,7 +31,7 @@ export function Sidebar() {
           <span className="text-xs uppercase tracking-[0.3em] text-emerald-300/80">
             JSONDeck
           </span>
-          <span className="text-sm text-slate-400">{publicEnv.siteLabel}</span>
+          <span className="text-sm text-slate-300">{publicEnv.siteLabel}</span>
         </Link>
         <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-emerald-200">
           Pro
@@ -45,19 +45,19 @@ export function Sidebar() {
             className="group flex items-center justify-between rounded-xl border border-transparent px-4 py-3 text-sm text-slate-200 transition hover:border-slate-700/70 hover:bg-slate-900/60"
           >
             <span>{item.label}</span>
-            <span className="text-xs text-slate-500 opacity-0 transition group-hover:opacity-100">
+            <span className="text-xs text-slate-400 opacity-0 transition group-hover:opacity-100">
               ↗
             </span>
           </Link>
         ))}
       </nav>
       <div className="space-y-3 rounded-2xl border border-slate-800/70 bg-slate-900/60 p-4">
-        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">System</p>
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <p className="text-xs uppercase tracking-[0.2em] text-slate-300">System</p>
+        <div className="flex items-center justify-between text-xs text-slate-300">
           <span>Latency</span>
           <span className="text-emerald-300">24ms</span>
         </div>
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center justify-between text-xs text-slate-300">
           <span>Region</span>
           <span>us-east</span>
         </div>

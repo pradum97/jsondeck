@@ -18,6 +18,13 @@ export type JsonDiffLine = {
 const VALID_MESSAGE = "JSON is valid.";
 
 export function formatJson(input: string): JsonTransformResult {
+  if (input.trim() === "") {
+    return {
+      value: input,
+      diagnostic: { status: "idle", message: "Ready to validate." },
+    };
+  }
+
   try {
     const parsed = JSON.parse(input) as unknown;
     return {
@@ -36,6 +43,13 @@ export function formatJson(input: string): JsonTransformResult {
 }
 
 export function minifyJson(input: string): JsonTransformResult {
+  if (input.trim() === "") {
+    return {
+      value: input,
+      diagnostic: { status: "idle", message: "Ready to validate." },
+    };
+  }
+
   try {
     const parsed = JSON.parse(input) as unknown;
     return {

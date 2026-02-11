@@ -23,8 +23,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Navbar />
         <motion.section
           className={cn(
-            "glass relative mx-2 mb-2 mt-2 flex-1 rounded-3xl border border-slate-800/80 p-2 shadow-2xl sm:mx-4 sm:mb-4 sm:mt-3 sm:p-4",
-            "before:pointer-events-none before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-slate-900/60 before:to-slate-950/40"
+            "glass relative mx-2 mb-2 mt-1 flex-1 rounded-2xl border border-slate-800/65 p-2 shadow-2xl sm:mx-3 sm:mb-3 sm:p-3",
+            "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-slate-900/45 before:to-slate-950/25 before:content-['']"
           )}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

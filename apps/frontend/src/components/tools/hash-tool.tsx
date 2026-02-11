@@ -40,8 +40,8 @@ export function HashTool() {
               onClick={() => setAlgorithm(algo)}
               className={
                 algorithm === algo
-                  ? "rounded-full border border-cyan-400/60 bg-cyan-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200"
-                  : "rounded-full border border-slate-700/70 bg-slate-900/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300"
+                  ? "rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white hover:bg-blue-700 dark:border-cyan-400/60 dark:bg-cyan-500/10 dark:text-cyan-200 dark:hover:bg-cyan-500/20"
+                  : "rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 dark:border-slate-700/70 dark:bg-slate-900/70 dark:text-slate-300"
               }
             >
               {algo}
@@ -52,11 +52,11 @@ export function HashTool() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder="Enter text to hash"
-          className="min-h-[120px] w-full rounded-2xl border border-slate-800/70 bg-slate-950/80 p-4 text-sm text-slate-200 placeholder:text-slate-500"
+          className="min-h-[120px] w-full rounded-2xl border border-slate-300 bg-white dark:border-slate-800/70 dark:bg-slate-950/80 p-4 text-sm text-slate-900 placeholder:text-slate-500 dark:text-slate-200"
         />
-        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/60 p-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800/70 dark:bg-slate-900/60">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Digest</p>
-          <pre className="mt-2 break-words text-xs text-slate-200">
+          <pre className="mt-2 break-words text-xs text-slate-900 dark:text-slate-200">
             {output || "Hash will appear here."}
           </pre>
         </div>

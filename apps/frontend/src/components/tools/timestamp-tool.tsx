@@ -32,9 +32,9 @@ export function TimestampTool() {
             <input
               value={epoch}
               onChange={(event) => setEpoch(event.target.value)}
-              className="w-full rounded-2xl border border-slate-800/70 bg-slate-950/80 px-4 py-2 text-sm text-slate-200"
+              className="w-full rounded-2xl border border-slate-300 bg-white dark:border-slate-800/70 dark:bg-slate-950/80 px-4 py-2 text-sm text-slate-900 dark:text-slate-200"
             />
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {parsedEpoch ? parsedEpoch.toUTCString() : "Invalid epoch"}
             </p>
           </div>
@@ -45,9 +45,9 @@ export function TimestampTool() {
             <input
               value={iso}
               onChange={(event) => setIso(event.target.value)}
-              className="w-full rounded-2xl border border-slate-800/70 bg-slate-950/80 px-4 py-2 text-sm text-slate-200"
+              className="w-full rounded-2xl border border-slate-300 bg-white dark:border-slate-800/70 dark:bg-slate-950/80 px-4 py-2 text-sm text-slate-900 dark:text-slate-200"
             />
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               {parsedIso ? parsedIso.getTime() : "Invalid ISO"}
             </p>
           </div>

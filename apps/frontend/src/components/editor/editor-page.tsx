@@ -216,7 +216,7 @@ export function EditorPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-800 bg-card p-2 shadow-sm">
+      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-200 bg-card p-2 shadow-sm dark:border-slate-800">
         <div className="flex items-center gap-2 overflow-x-auto pb-3">
           <EditorTabs onAddTab={handleNewTab} />
         </div>
@@ -242,7 +242,7 @@ export function EditorPage() {
         </div>
 
         <div className="relative flex-1 min-h-0 pt-3">
-          <div className={cn("absolute inset-0 rounded-xl border border-slate-800 bg-[#0b1220] shadow-sm", isViewerMode ? "hidden" : "block")}>
+          <div className={cn("absolute inset-0 rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#0b1220]", isViewerMode ? "hidden" : "block")}>
             <MonacoEditor
               height="100%"
               width="100%"
@@ -284,18 +284,18 @@ export function EditorPage() {
 
       <AnimatePresence>
         {showLoadModal ? (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-card/90 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-slate-800 bg-card p-5 shadow-sm">
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 p-4 backdrop-blur-sm dark:bg-card/90" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-slate-200 bg-card p-5 shadow-sm dark:border-slate-800">
               <h2 className="text-base font-semibold text-text">Load JSON from API URL</h2>
               <input
                 value={apiUrl}
                 onChange={(event) => setApiUrl(event.target.value)}
                 placeholder="https://api.example.com/data"
-                className="mt-3 h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-secondary"
+                className="mt-3 h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-border dark:bg-card dark:text-secondary"
               />
               <div className="mt-4 flex justify-end gap-2">
-                <button type="button" onClick={() => setShowLoadModal(false)} className="h-9 rounded-lg border border-border px-4 text-xs font-semibold uppercase tracking-[0.16em] text-secondary">Cancel</button>
-                <button type="button" onClick={() => void handleLoadJson()} className="h-9 rounded-lg bg-accent-soft px-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">Load</button>
+                <button type="button" onClick={() => setShowLoadModal(false)} className="h-9 rounded-lg border border-slate-300 bg-white px-4 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 dark:border-border dark:bg-transparent dark:text-secondary">Cancel</button>
+                <button type="button" onClick={() => void handleLoadJson()} className="h-9 rounded-lg bg-blue-600 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-white hover:bg-blue-700 dark:bg-accent-soft dark:text-accent dark:hover:bg-accent-soft">Load</button>
               </div>
             </motion.div>
           </motion.div>

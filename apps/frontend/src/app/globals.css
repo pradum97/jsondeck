@@ -4,12 +4,12 @@
 
 :root {
   color-scheme: light;
-  --bg: #f6f8fb;
-  --section: #f1f5f9;
+  --bg: #ffffff;
+  --section: #ffffff;
   --card: #ffffff;
-  --border: #cbd5e1;
+  --border: #e2e8f0;
   --text: #0f172a;
-  --secondary: #334155;
+  --secondary: #475569;
   --muted: #64748b;
   --disabled: #94a3b8;
   --accent: #2563eb;
@@ -92,6 +92,7 @@ textarea,
 select {
   background: #ffffff;
   border: 1px solid #cbd5e1;
+  color: #0f172a;
 }
 
 input:disabled,

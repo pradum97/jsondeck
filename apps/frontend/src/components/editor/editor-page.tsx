@@ -222,7 +222,7 @@ export function EditorPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-200 bg-card p-2 shadow-sm dark:border-slate-800">
+      <div className="flex min-h-[calc(100vh-14rem)] flex-1 flex-col rounded-2xl border border-slate-300 bg-card p-2 shadow-sm dark:border-slate-700">
         <div className="flex items-center gap-2 overflow-x-auto pb-3">
           <EditorTabs onAddTab={handleNewTab} />
         </div>
@@ -247,8 +247,8 @@ export function EditorPage() {
           ) : null}
         </div>
 
-        <div className="relative flex-1 min-h-0 pt-3">
-          <div className={cn("absolute inset-0 rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#0b1220]", isViewerMode ? "hidden" : "block")}>
+        <div className="relative min-h-0 flex-1 pt-3">
+          <div className={cn("absolute inset-0 rounded-xl bg-white shadow-sm dark:bg-[#0b1220]", isViewerMode ? "hidden" : "block")}>
             <MonacoEditor
               height="100%"
               width="100%"

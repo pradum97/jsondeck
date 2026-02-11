@@ -16,7 +16,7 @@ export function LandingHero() {
           Premium JSON Workspace
         </motion.div>
         <motion.h2
-          className="text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl dark:text-slate-100"
+          className="text-4xl font-bold tracking-tight text-slate-900 lg:text-5xl dark:text-white"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut" }}
@@ -24,7 +24,7 @@ export function LandingHero() {
           Build, validate, and ship JSON workflows with the power of VSCode,
           Postman, and DevTools.
         </motion.h2>
-        <p className="max-w-2xl text-base text-slate-700 lg:text-lg dark:text-slate-300">
+        <p className="max-w-2xl text-base text-slate-700 lg:text-lg dark:text-slate-100/90">
           JSONDeck delivers an enterprise-grade command center for JSON
           manipulation, API testing, and data transformations. Designed for
           developer focus with instant context switching and high-performance

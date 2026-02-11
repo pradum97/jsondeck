@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useMemo, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import type { editor } from "monaco-editor";
 import { buildLineDiff } from "@/lib/json-tools";
 
@@ -35,6 +36,7 @@ function normalize(value: string, options: CompareOptions): string {
 }
 
 export function JsonDiffPage() {
+  const { resolvedTheme } = useTheme();
   const [left, setLeft] = useState("{\n  \"service\": \"billing\",\n  \"region\": \"us-east-1\"\n}");
   const [right, setRight] = useState("{\n  \"service\": \"billing\",\n  \"region\": \"eu-west-1\"\n}");
   const [ignoreOrder, setIgnoreOrder] = useState(false);
@@ -65,21 +67,21 @@ export function JsonDiffPage() {
   return (
     <main className="flex h-full flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
-        <button type="button" onClick={compare} className="h-10 rounded-xl bg-cyan-500/25 px-4 text-xs uppercase tracking-[0.2em] text-cyan-100">Compare</button>
-        <button type="button" onClick={() => { setLeft(""); setRight(""); }} className="h-10 rounded-xl border border-slate-700 px-4 text-xs uppercase tracking-[0.2em] text-slate-200">Clear</button>
-        <button type="button" onClick={() => { setLeft(right); setRight(left); }} className="h-10 rounded-xl border border-slate-700 px-4 text-xs uppercase tracking-[0.2em] text-slate-200">Swap JSON</button>
-        <button type="button" onClick={() => void navigator.clipboard.writeText(left)} className="h-10 rounded-xl border border-slate-700 px-4 text-xs uppercase tracking-[0.2em] text-slate-200">Copy Left</button>
-        <button type="button" onClick={() => void navigator.clipboard.writeText(right)} className="h-10 rounded-xl border border-slate-700 px-4 text-xs uppercase tracking-[0.2em] text-slate-200">Copy Right</button>
-        <label className="ml-2 flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" checked={ignoreOrder} onChange={(event) => setIgnoreOrder(event.target.checked)} />Ignore order</label>
-        <label className="flex items-center gap-2 text-xs text-slate-300"><input type="checkbox" checked={ignoreWhitespace} onChange={(event) => setIgnoreWhitespace(event.target.checked)} />Ignore whitespace</label>
+        <button type="button" onClick={compare} className="h-10 rounded-xl bg-accent-soft px-4 text-xs uppercase tracking-[0.2em] text-accent">Compare</button>
+        <button type="button" onClick={() => { setLeft(""); setRight(""); }} className="h-10 rounded-xl border border-border px-4 text-xs uppercase tracking-[0.2em] text-secondary">Clear</button>
+        <button type="button" onClick={() => { setLeft(right); setRight(left); }} className="h-10 rounded-xl border border-border px-4 text-xs uppercase tracking-[0.2em] text-secondary">Swap JSON</button>
+        <button type="button" onClick={() => void navigator.clipboard.writeText(left)} className="h-10 rounded-xl border border-border px-4 text-xs uppercase tracking-[0.2em] text-secondary">Copy Left</button>
+        <button type="button" onClick={() => void navigator.clipboard.writeText(right)} className="h-10 rounded-xl border border-border px-4 text-xs uppercase tracking-[0.2em] text-secondary">Copy Right</button>
+        <label className="ml-2 flex items-center gap-2 text-xs text-secondary"><input type="checkbox" checked={ignoreOrder} onChange={(event) => setIgnoreOrder(event.target.checked)} />Ignore order</label>
+        <label className="flex items-center gap-2 text-xs text-secondary"><input type="checkbox" checked={ignoreWhitespace} onChange={(event) => setIgnoreWhitespace(event.target.checked)} />Ignore whitespace</label>
       </div>
 
       <div className="grid h-[62vh] min-h-[360px] gap-3 md:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl border border-slate-800/70">
+        <div className="overflow-hidden rounded-2xl border border-border">
           <MonacoEditor
             height="100%"
             language="json"
-            theme="vs-dark"
+            theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
             value={left}
             onChange={(value) => setLeft(value ?? "")}
             onMount={(editorInstance) => {
@@ -89,11 +91,11 @@ export function JsonDiffPage() {
             options={{ minimap: { enabled: false }, automaticLayout: true, scrollBeyondLastLine: false }}
           />
         </div>
-        <div className="overflow-hidden rounded-2xl border border-slate-800/70">
+        <div className="overflow-hidden rounded-2xl border border-border">
           <MonacoEditor
             height="100%"
             language="json"
-            theme="vs-dark"
+            theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
             value={right}
             onChange={(value) => setRight(value ?? "")}
             onMount={(editorInstance) => {
@@ -105,9 +107,9 @@ export function JsonDiffPage() {
         </div>
       </div>
 
-      <div className="max-h-48 overflow-auto rounded-2xl border border-slate-800/70 bg-slate-950/70 p-3 font-mono text-xs">
-        {diff.length === 0 ? <p className="text-slate-500">No differences detected.</p> : diff.map((line, index) => (
-          <p key={`${line.type}-${index}`} className={line.type === "added" ? "bg-emerald-400/10 text-emerald-300" : line.type === "removed" ? "bg-rose-400/10 text-rose-300" : "text-slate-400"}>
+      <div className="max-h-48 overflow-auto rounded-2xl border border-border bg-card p-3 font-mono text-xs">
+        {diff.length === 0 ? <p className="text-muted">No differences detected.</p> : diff.map((line, index) => (
+          <p key={`${line.type}-${index}`} className={line.type === "added" ? "bg-success/10 text-success" : line.type === "removed" ? "bg-error/10 text-error" : "text-muted"}>
             {line.type === "added" ? "+" : line.type === "removed" ? "-" : " "} {line.line}
           </p>
         ))}

@@ -21,20 +21,20 @@ export function EditorTabs({ onAddTab }: EditorTabsProps) {
           className={cn(
             "group relative flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-medium transition",
             activeTabId === tab.id
-              ? "border-cyan-400/65 bg-cyan-500/15 text-cyan-100 shadow-[0_0_16px_rgba(34,211,238,0.22)]"
-              : "border-slate-700/80 bg-slate-900/55 text-slate-300 hover:text-slate-100"
+              ? "border-accent bg-accent-soft text-accent shadow-[0_0_16px_rgba(34,211,238,0.22)]"
+              : "border-border bg-section text-secondary hover:text-text"
           )}
         >
           <span className="truncate">{tab.name}</span>
           {tab.isDirty ? (
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.85)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-warning shadow-[0_0_8px_rgba(251,191,36,0.85)]" />
           ) : null}
           <span
             onClick={(event) => {
               event.stopPropagation();
               closeTab(tab.id);
             }}
-            className="ml-1 text-[10px] text-slate-500 transition group-hover:text-slate-200"
+            className="ml-1 text-[10px] text-muted transition group-hover:text-secondary"
           >
             ✕
           </span>
@@ -45,7 +45,7 @@ export function EditorTabs({ onAddTab }: EditorTabsProps) {
         whileHover={{ y: -1 }}
         whileTap={{ scale: 0.98 }}
         onClick={onAddTab}
-        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-slate-700/80 bg-slate-900/65 text-slate-200 transition hover:border-cyan-400/60 hover:text-cyan-100"
+        className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border bg-section text-secondary transition hover:border-accent hover:text-accent"
         aria-label="Add tab"
       >
         <span className="text-base leading-none">+</span>

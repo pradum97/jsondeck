@@ -21,12 +21,12 @@ function ToolbarButton({ label, onClick, shortcut, variant = "secondary" }: Tool
       className={cn(
         "inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition",
         variant === "primary"
-          ? "border-cyan-300/70 bg-cyan-500/20 text-cyan-100 shadow-[0_0_16px_rgba(34,211,238,0.35)]"
-          : "border-slate-700/80 bg-slate-900/60 text-slate-200 hover:border-slate-500"
+          ? "border-accent bg-accent-soft text-accent shadow-[0_0_16px_rgba(34,211,238,0.35)]"
+          : "border-border bg-section text-secondary hover:border-accent"
       )}
     >
       <span>{label}</span>
-      {shortcut ? <span className="rounded-full border border-slate-600/80 px-1.5 py-0 text-[9px] text-slate-300">{shortcut}</span> : null}
+      {shortcut ? <span className="rounded-full border border-border px-1.5 py-0 text-[9px] text-secondary">{shortcut}</span> : null}
     </motion.button>
   );
 }
@@ -56,14 +56,14 @@ export function EditorToolbar({ onFormat, onMinify, onPaste, onClear, onCopy, on
         <ToolbarButton label="Load JSON" onClick={onLoadJson} />
       </div>
 
-      <div className="inline-flex h-7 shrink-0 items-center rounded-full border border-slate-700/80 bg-slate-900/70 p-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
+      <div className="inline-flex h-7 shrink-0 items-center rounded-full border border-border bg-section p-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]">
         <Link
           href="/editor"
           className={cn(
             "inline-flex h-full items-center rounded-full px-2.5 transition",
             pathname?.startsWith("/editor")
-              ? "bg-cyan-500/25 text-cyan-100"
-              : "text-slate-300 hover:text-slate-100"
+              ? "bg-accent-soft text-accent"
+              : "text-secondary hover:text-text"
           )}
         >
           Editor
@@ -73,8 +73,8 @@ export function EditorToolbar({ onFormat, onMinify, onPaste, onClear, onCopy, on
           className={cn(
             "inline-flex h-full items-center rounded-full px-2.5 transition",
             pathname?.startsWith("/viewer")
-              ? "bg-cyan-500/25 text-cyan-100"
-              : "text-slate-300 hover:text-slate-100"
+              ? "bg-accent-soft text-accent"
+              : "text-secondary hover:text-text"
           )}
         >
           Viewer

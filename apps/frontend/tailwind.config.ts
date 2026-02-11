@@ -1,11 +1,27 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: ["./src/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./pages/**/*.{ts,tsx}"] ,
+  content: ["./src/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./pages/**/*.{ts,tsx}"],
   theme: {
-    extend: {}
+    extend: {
+      colors: {
+        bg: "var(--bg)",
+        section: "var(--section)",
+        card: "var(--card)",
+        border: "var(--border)",
+        text: "var(--text)",
+        secondary: "var(--secondary)",
+        muted: "var(--muted)",
+        accent: "var(--accent)",
+        "accent-hover": "var(--accent-hover)",
+        "accent-soft": "var(--accent-soft)",
+        success: "var(--success)",
+        warning: "var(--warning)",
+        error: "var(--error)",
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };
 
 export default config;

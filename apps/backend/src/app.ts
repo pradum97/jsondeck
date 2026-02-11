@@ -15,10 +15,11 @@ import { errorHandler } from "./middleware/error-handler";
 import { notFound } from "./middleware/not-found";
 import { requestId } from "./middleware/request-id";
 import { logger as httpLogger } from "./middlewares/logger";
-import { rateLimiter } from "./middlewares/rate-limit";
+import { apiRateLimiter, authRateLimiter, rateLimiter } from "./middlewares/rate-limit";
 import { validationMiddleware } from "./middlewares/validate";
 import { cache } from "./services/cache";
 import { gzipCompression } from "./middlewares/compression";
+import { csrfProtection, jsonSanitizer, payloadSizeGuard } from "./middlewares/security";
 
 export const createApp = (): express.Express => {
   const app = express();
@@ -30,6 +31,12 @@ export const createApp = (): express.Express => {
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: "cross-origin" },
+      referrerPolicy: { policy: "no-referrer" },
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
     })
   );
   app.use(
@@ -45,6 +52,7 @@ export const createApp = (): express.Express => {
     })
   );
   app.use(cookieParser());
+  app.use(payloadSizeGuard);
   app.use(gzipCompression);
   app.use(
     express.json({
@@ -54,7 +62,11 @@ export const createApp = (): express.Express => {
       },
     })
   );
+  app.use(jsonSanitizer);
   app.use(validationMiddleware);
+  app.use(csrfProtection);
+  app.use("/api", apiRateLimiter);
+  app.use("/api/auth", authRateLimiter);
 
   app.get("/health", (_req, res) => {
     res.status(200).json({

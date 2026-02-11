@@ -137,7 +137,7 @@ export const getAnalyticsSummary = async (range: AnalyticsRange): Promise<Summar
       }),
       ProjectModel.countDocuments(matchCreatedRange(range)),
       DocumentModel.countDocuments(matchCreatedRange(range)),
-      SubscriptionModel.aggregate<Array<{ _id: string; count: number }>>([
+      SubscriptionModel.aggregate<{ _id: string; count: number }>([
         {
           $group: {
             _id: "$status",
@@ -176,7 +176,7 @@ export const getAnalyticsUsage = async (range: AnalyticsRange): Promise<UsageRes
   return withAnalyticsCache(key, async () => {
     const [apiUsageRows, toolUsageRows, dailyRequestRows, dailyProjectRows, dailyDocumentRows, dailyUserRows] =
       await Promise.all([
-        ApiRequestModel.aggregate<Array<{ _id: string; count: number }>>([
+        ApiRequestModel.aggregate<{ _id: string; count: number }>([
           { $match: matchCreatedRange(range) },
           { $group: { _id: "$method", count: { $sum: 1 } } },
           { $sort: { count: -1 } },
@@ -186,7 +186,7 @@ export const getAnalyticsUsage = async (range: AnalyticsRange): Promise<UsageRes
           ProjectModel.countDocuments(matchCreatedRange(range)),
           ApiRequestModel.countDocuments(matchCreatedRange(range)),
         ]),
-        ApiRequestModel.aggregate<Array<{ _id: string; count: number }>>([
+        ApiRequestModel.aggregate<{ _id: string; count: number }>([
           { $match: matchCreatedRange(range) },
           {
             $group: {
@@ -198,17 +198,17 @@ export const getAnalyticsUsage = async (range: AnalyticsRange): Promise<UsageRes
           },
           { $sort: { _id: 1 } },
         ]),
-        ProjectModel.aggregate<Array<{ _id: string; count: number }>>([
+        ProjectModel.aggregate<{ _id: string; count: number }>([
           { $match: matchCreatedRange(range) },
           { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } },
           { $sort: { _id: 1 } },
         ]),
-        DocumentModel.aggregate<Array<{ _id: string; count: number }>>([
+        DocumentModel.aggregate<{ _id: string; count: number }>([
           { $match: matchCreatedRange(range) },
           { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } },
           { $sort: { _id: 1 } },
         ]),
-        UserModel.aggregate<Array<{ _id: string; count: number }>>([
+        UserModel.aggregate<{ _id: string; count: number }>([
           { $match: matchCreatedRange(range) },
           { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } },
           { $sort: { _id: 1 } },
@@ -256,7 +256,7 @@ export const getAnalyticsRevenue = async (range: AnalyticsRange): Promise<Revenu
   return withAnalyticsCache(key, async () => {
     const [recurringRevenue, subscriptionBreakdown, dailyRevenueRows] = await Promise.all([
       getRecurringRevenueByInterval(),
-      SubscriptionModel.aggregate<Array<{ _id: { planCode: string; interval: string; seats: number }; count: number }>>([
+      SubscriptionModel.aggregate<{ _id: { planCode: string; interval: string; seats: number }; count: number }>([
         {
           $match: {
             status: { $in: ACTIVE_SUBSCRIPTION_STATUSES },
@@ -274,7 +274,7 @@ export const getAnalyticsRevenue = async (range: AnalyticsRange): Promise<Revenu
           },
         },
       ]),
-      SubscriptionModel.aggregate<Array<{ _id: string; revenueCents: number }>>([
+      SubscriptionModel.aggregate<{ _id: string; revenueCents: number }>([
         { $match: matchCreatedRange(range) },
         {
           $lookup: {

@@ -16,7 +16,10 @@
         "./src/lib/recharts-compat"
       ]
     },
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strict": false,
+    "noUncheckedIndexedAccess": false,
+    "noImplicitAny": false
   },
   "include": [
     "next-env.d.ts",

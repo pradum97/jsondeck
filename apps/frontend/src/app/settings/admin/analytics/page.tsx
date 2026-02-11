@@ -12,7 +12,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from "@/lib/recharts-compat";
 import { useAnalyticsRevenue, useAnalyticsSummary, useAnalyticsUsage } from "@/hooks/useAnalytics";
 
 const formatCurrency = (cents: number) =>

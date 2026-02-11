@@ -12,6 +12,7 @@ const config: Config = {
         text: "var(--text)",
         secondary: "var(--secondary)",
         muted: "var(--muted)",
+        disabled: "var(--disabled)",
         accent: "var(--accent)",
         "accent-hover": "var(--accent-hover)",
         "accent-soft": "var(--accent-soft)",

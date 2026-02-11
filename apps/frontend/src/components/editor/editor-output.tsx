@@ -90,11 +90,11 @@ function TreeNode({ path, label, value, search, collapseDepth, level }: TreeNode
     <div className={cn("flex items-center gap-2 pl-3 text-xs", match ? "text-accent" : "text-secondary")}>
       <span className="text-muted">{highlightText(label, search)}:</span>
       <span>{highlightText(String(value), search)}</span>
-      <span className="rounded-full border border-border px-1.5 py-0 text-[9px] uppercase tracking-[0.12em] text-muted">{value === null ? "null" : typeof value}</span>
-      <button type="button" className="ml-1 rounded border border-border px-2 py-0.5 text-[10px] transition-colors hover:border-accent" onClick={() => void navigator.clipboard.writeText(path)}>
+      <span className="rounded-md border border-border bg-section px-1.5 py-0 text-[9px] uppercase tracking-normal text-secondary">{value === null ? "null" : typeof value}</span>
+      <button type="button" className="ml-1 rounded-md border border-border bg-section px-2 py-0.5 text-[10px] text-secondary transition-colors hover:border-accent" onClick={() => void navigator.clipboard.writeText(path)}>
         path
       </button>
-      <button type="button" className="rounded border border-border px-2 py-0.5 text-[10px] transition-colors hover:border-accent" onClick={() => void navigator.clipboard.writeText(JSON.stringify(value))}>
+      <button type="button" className="rounded-md border border-border bg-section px-2 py-0.5 text-[10px] text-secondary transition-colors hover:border-accent" onClick={() => void navigator.clipboard.writeText(JSON.stringify(value))}>
         node
       </button>
     </div>
@@ -134,21 +134,21 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
       <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1.5 border-b border-border bg-card/95 px-2.5 py-2 backdrop-blur">
         <p className={cn("mr-auto text-xs font-semibold", diagnostics.status === "error" ? "text-error" : "text-success")}>{diagnostics.message}</p>
         {(["raw", "tree", "table"] as const).map((tab) => (
-          <motion.button key={tab} type="button" onClick={() => setView(tab)} whileHover={{ y: -1 }} className={cn("h-7 rounded-full border px-2.5 text-[10px] uppercase tracking-[0.16em] transition", view === tab ? "border-accent bg-accent-soft text-accent" : "border-border text-secondary hover:border-accent")}>
+          <motion.button key={tab} type="button" onClick={() => setView(tab)} whileHover={{ y: -1 }} className={cn("h-7 rounded-full border px-2.5 text-[10px] uppercase tracking-normal transition", view === tab ? "border-accent bg-accent-soft text-accent" : "border-border text-secondary hover:border-accent")}>
             {tab}
           </motion.button>
         ))}
       </div>
 
       <div className="grid gap-1.5 border-b border-border px-2.5 py-2 sm:grid-cols-2 lg:grid-cols-4">
-        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="h-8 rounded-lg border border-border bg-section px-2.5 text-xs text-secondary" />
-        <input value={keyFilter} onChange={(event) => setKeyFilter(event.target.value)} placeholder="Filter key" className="h-8 rounded-lg border border-border bg-section px-2.5 text-xs text-secondary" />
-        <input value={valueFilter} onChange={(event) => setValueFilter(event.target.value)} placeholder="Filter value" className="h-8 rounded-lg border border-border bg-section px-2.5 text-xs text-secondary" />
+        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="h-8 rounded-lg border border-slate-300 bg-white px-2.5 text-xs text-secondary focus:ring-2 focus:ring-blue-500" />
+        <input value={keyFilter} onChange={(event) => setKeyFilter(event.target.value)} placeholder="Filter key" className="h-8 rounded-lg border border-slate-300 bg-white px-2.5 text-xs text-secondary focus:ring-2 focus:ring-blue-500" />
+        <input value={valueFilter} onChange={(event) => setValueFilter(event.target.value)} placeholder="Filter value" className="h-8 rounded-lg border border-slate-300 bg-white px-2.5 text-xs text-secondary focus:ring-2 focus:ring-blue-500" />
         <div className="flex items-center gap-1.5">
-          <button type="button" onClick={() => setCollapseDepth(0)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Expand</button>
-          <button type="button" onClick={() => setCollapseDepth(1)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Depth 1</button>
-          <button type="button" onClick={() => setCollapseDepth(2)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Depth 2</button>
-          <button type="button" onClick={() => void navigator.clipboard.writeText(displayText)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent">Copy</button>
+          <button type="button" onClick={() => setCollapseDepth(0)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-normal text-secondary transition hover:border-accent">Expand</button>
+          <button type="button" onClick={() => setCollapseDepth(1)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-normal text-secondary transition hover:border-accent">Depth 1</button>
+          <button type="button" onClick={() => setCollapseDepth(2)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-normal text-secondary transition hover:border-accent">Depth 2</button>
+          <button type="button" onClick={() => void navigator.clipboard.writeText(displayText)} className="h-8 rounded-lg border border-border px-2 text-[10px] uppercase tracking-normal text-secondary transition hover:border-accent">Copy</button>
         </div>
       </div>
 
@@ -162,14 +162,14 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
             ) : null}
 
             {view === "tree" ? parsed ? (
-              <div className="h-full overflow-auto rounded-xl border border-border bg-card p-2.5 font-mono">
+              <div className="h-full overflow-auto rounded-xl border border-border bg-card p-2.5 font-mono leading-relaxed tracking-normal">
                 <TreeNode path="$" label="$" value={parsed} search={search} collapseDepth={collapseDepth} level={0} />
               </div>
             ) : <p className="text-sm text-muted">Valid JSON is required for tree view.</p> : null}
 
             {view === "table" ? parsed ? (
               <div className="h-full overflow-auto rounded-xl border border-border bg-card p-2.5">
-                <table className="w-full text-left text-xs text-secondary">
+                <table className="w-full text-left text-xs text-secondary leading-relaxed tracking-normal">
                   <thead className="sticky top-0 bg-card text-muted">
                     <tr>
                       <th className="pb-2">Path</th>
@@ -182,10 +182,10 @@ function EditorOutputBase({ formatted }: EditorOutputProps) {
                     {visibleRows.map((row) => (
                       <tr key={row.path} className="border-t border-border align-top">
                         <td className="py-1 pr-2 font-mono text-accent">{highlightText(row.path, search)}</td>
-                        <td className="py-1 pr-2"><span className="rounded-full border border-border px-1.5 py-0 text-[9px] uppercase tracking-[0.1em] text-secondary">{row.type}</span></td>
+                        <td className="py-1 pr-2"><span className="rounded-md border border-border bg-section px-1.5 py-0 text-[9px] uppercase tracking-normal text-secondary">{row.type}</span></td>
                         <td className="py-1">{highlightText(row.value, search)}</td>
                         <td className="py-1">
-                          <button type="button" className="rounded border border-border px-2 py-0.5 text-[10px] uppercase tracking-[0.12em] text-secondary transition hover:border-accent" onClick={() => void navigator.clipboard.writeText(row.path)}>Path</button>
+                          <button type="button" className="rounded-md border border-border bg-section px-2 py-0.5 text-[10px] uppercase tracking-normal text-secondary transition hover:border-accent" onClick={() => void navigator.clipboard.writeText(row.path)}>Path</button>
                         </td>
                       </tr>
                     ))}

@@ -4,6 +4,28 @@
 
 :root {
   color-scheme: dark;
+  --bg-gradient-top: rgba(30, 41, 59, 0.65);
+  --bg-gradient-bottom: rgba(15, 23, 42, 0.8);
+  --bg-base: #020617;
+  --text-primary: #e2e8f0;
+  --glass-bg: rgba(15, 23, 42, 0.6);
+  --glass-border: rgba(148, 163, 184, 0.2);
+  --glass-shadow: rgba(2, 6, 23, 0.5);
+}
+
+.light {
+  color-scheme: light;
+  --bg-gradient-top: rgba(148, 163, 184, 0.25);
+  --bg-gradient-bottom: rgba(226, 232, 240, 0.4);
+  --bg-base: #f8fafc;
+  --text-primary: #0f172a;
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(148, 163, 184, 0.4);
+  --glass-shadow: rgba(15, 23, 42, 0.08);
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 * {
@@ -18,10 +40,10 @@ body {
 body {
   margin: 0;
   min-height: 100%;
-  background: radial-gradient(circle at top left, rgba(30, 41, 59, 0.65), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.8), transparent 55%),
-    #020617;
-  color: #e2e8f0;
+  background: radial-gradient(circle at top left, var(--bg-gradient-top), transparent 55%),
+    radial-gradient(circle at bottom right, var(--bg-gradient-bottom), transparent 55%),
+    var(--bg-base);
+  color: var(--text-primary);
   font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -31,8 +53,8 @@ a {
 }
 
 .glass {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: 0 20px 45px rgba(2, 6, 23, 0.5);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 45px var(--glass-shadow);
   backdrop-filter: blur(16px);
 }

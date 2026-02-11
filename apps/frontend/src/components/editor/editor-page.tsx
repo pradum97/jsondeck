@@ -216,13 +216,13 @@ export function EditorPage() {
   }, [activeTab.content]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 sm:gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-cyan-200">
             JSON Editor
           </p>
-          <h1 className="text-3xl font-semibold text-white">
+          <h1 className="text-2xl font-semibold text-white sm:text-3xl">
             Real-time JSON workspace
           </h1>
           <p className="text-sm text-slate-400">
@@ -230,7 +230,7 @@ export function EditorPage() {
           </p>
         </div>
         <motion.div
-          className="rounded-3xl border border-slate-800/70 bg-slate-950/60 px-6 py-4 text-sm text-slate-300 shadow-lg"
+          className="w-full rounded-3xl border border-slate-800/70 bg-slate-950/60 px-4 py-3 text-sm text-slate-300 shadow-lg sm:w-auto sm:px-6 sm:py-4"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -252,14 +252,14 @@ export function EditorPage() {
         onNewTab={handleNewTab}
       />
 
-      <div className="rounded-3xl border border-slate-800/70 bg-slate-950/50 p-4">
+      <div className="rounded-3xl border border-slate-800/70 bg-slate-950/50 p-3 sm:p-4">
         <EditorTabs />
-        <div className="mt-4 h-[520px] rounded-3xl border border-slate-800/70 bg-slate-950/70 p-3">
+        <div className="mt-4 h-[58vh] min-h-[360px] rounded-3xl border border-slate-800/70 bg-slate-950/70 p-2 sm:h-[520px] sm:p-3">
           <ResizableSplit
             initialRatio={splitRatio}
             onRatioChange={setSplitRatio}
             left={
-              <div className="flex h-full flex-col gap-3 pr-2">
+              <div className="flex h-full min-w-0 flex-col gap-3 pr-2">
                 <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500">
                   <span>Editor</span>
                   <span>
@@ -286,7 +286,7 @@ export function EditorPage() {
               </div>
             }
             right={
-              <div className="flex h-full flex-col gap-3 pl-2">
+              <div className="flex h-full min-w-0 flex-col gap-3 pl-2">
                 <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500">
                   <span>Output</span>
                   <span className={cn("text-cyan-300")}>

@@ -54,6 +54,10 @@ export function minifyJson(input: string): JsonTransformResult {
 }
 
 export function validateJson(input: string): JsonDiagnostic {
+  if (input.trim() === "") {
+    return { status: "idle", message: "Ready to validate." };
+  }
+
   try {
     JSON.parse(input);
     return { status: "valid", message: VALID_MESSAGE };

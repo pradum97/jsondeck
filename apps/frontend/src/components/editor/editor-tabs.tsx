@@ -21,13 +21,13 @@ export function EditorTabs({ onAddTab }: EditorTabsProps) {
           className={cn(
             "group relative flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-medium transition",
             activeTabId === tab.id
-              ? "border-accent bg-accent-soft text-accent shadow-[0_0_16px_rgba(34,211,238,0.22)]"
+              ? "border-accent bg-accent-soft text-accent shadow-sm"
               : "border-border bg-section text-secondary hover:text-text"
           )}
         >
           <span className="truncate">{tab.name}</span>
           {tab.isDirty ? (
-            <span className="h-1.5 w-1.5 rounded-full bg-warning shadow-[0_0_8px_rgba(251,191,36,0.85)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-warning shadow-sm" />
           ) : null}
           <span
             onClick={(event) => {

@@ -43,7 +43,7 @@ export function Navbar() {
   const isLightTheme = mounted && resolvedTheme === "light";
 
   return (
-    <nav className="glass sticky top-2 z-40 mx-2 mt-2 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-slate-800/80 px-3 py-2.5 sm:mx-4 sm:mt-3 sm:px-5 sm:py-3">
+    <nav className="glass sticky top-2 z-40 mx-2 mt-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800/80 px-3 py-2 sm:mx-3 sm:mt-2 sm:px-4 sm:py-2.5">
       <Link href="/" className="flex shrink-0 items-center gap-2 text-base font-semibold text-slate-100 sm:text-lg">
         <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
         JSONDeck
@@ -67,7 +67,7 @@ export function Navbar() {
         variant="ghost"
         size="sm"
         onClick={handleToggle}
-        className="order-2 inline-flex h-9 items-center gap-2 rounded-full px-3 sm:order-3"
+        className="order-2 inline-flex h-8 items-center gap-2 rounded-full px-3 text-xs sm:order-3"
       >
         <span aria-hidden="true">{isLightTheme ? "🌙" : "☀️"}</span>
         <span>{isLightTheme ? "Dark" : "Light"} Mode</span>

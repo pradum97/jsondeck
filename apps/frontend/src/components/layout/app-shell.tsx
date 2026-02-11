@@ -18,14 +18,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden text-slate-100">
+    <div className="relative min-h-screen overflow-x-clip text-slate-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(94,234,212,0.08),_transparent_55%)]" />
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
         <Topbar />
         <motion.section
           className={cn(
-            "glass relative m-3 flex-1 rounded-3xl border border-slate-800/80 p-3 shadow-2xl sm:m-4 sm:p-6",
+            "glass relative mx-2 mb-2 flex-1 rounded-3xl border border-slate-800/80 p-3 shadow-2xl sm:mx-4 sm:mb-4 sm:p-5",
             "before:pointer-events-none before:absolute before:inset-0 before:rounded-3xl before:bg-gradient-to-br before:from-slate-900/60 before:to-slate-950/40"
           )}
           initial={{ opacity: 0, y: 12 }}

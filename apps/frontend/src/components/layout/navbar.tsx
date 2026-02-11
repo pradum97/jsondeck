@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 type UserRole = "guest" | "user" | "pro" | "team" | "admin" | "superadmin";
 
 const navLinks: Array<{ href: Route; label: string; roles: UserRole[] }> = [
-  { href: "/", label: "Home", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
-  { href: "/editor", label: "Editor", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
+  { href: "/", label: "Editor", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
+  { href: "/home", label: "Home", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
   { href: "/transform", label: "Transform", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
   { href: "/tools", label: "Tools", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },
   { href: "/api-tester", label: "API Tester", roles: ["guest", "user", "pro", "team", "admin", "superadmin"] },

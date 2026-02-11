@@ -6,13 +6,10 @@ import { useTheme } from "next-themes";
 import { MonacoEditor } from "@/components/editor/monaco-editor";
 import { ResizableSplit } from "@/components/editor/resizable-split";
 import { cn } from "@/lib/utils";
-import {
-  TRANSFORM_TARGETS,
-  TransformTarget,
-  type TransformResult,
-} from "@/lib/transformers";
+import { TransformTarget, type TransformResult } from "@/lib/transformers";
 
 const DEFAULT_INPUT = "";
+const TARGET_OPTIONS: TransformTarget[] = ["TypeScript", "Java", "C#", "Python", "YAML", "CSV", "XML", "SQL", "GraphQL"];
 
 export function TransformPage() {
   const { resolvedTheme } = useTheme();
@@ -53,152 +50,60 @@ export function TransformPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-accent">
-            Transform Studio
-          </p>
-          <h1 className="text-3xl font-semibold text-text">
-            JSON to anything, instantly
-          </h1>
-          <p className="text-sm text-muted">
-            Convert structured data into production-ready types, schemas, and data
-            formats.
-          </p>
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm backdrop-blur-md">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-300">Transform Studio</p>
+          <h1 className="text-2xl font-semibold text-slate-100">JSON Transform</h1>
         </div>
-        <motion.div
-          className="rounded-3xl border border-border bg-card px-6 py-4 text-sm text-secondary shadow-lg"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <p className="text-xs uppercase tracking-[0.28em] text-muted">
-            Output
-          </p>
-          <p className="text-lg font-semibold text-text">{target}</p>
-          <p
-            className={cn(
-              "text-xs",
-              result.status === "valid" ? "text-accent" : "text-error"
-            )}
+        <div className="flex items-center gap-2">
+          <select
+            value={target}
+            onChange={(event) => setTarget(event.target.value as TransformTarget)}
+            className="h-10 rounded-lg border border-slate-800 bg-slate-900 px-3 text-sm text-slate-100"
           >
-            {result.status === "valid" ? result.message : "Invalid JSON"}
-          </p>
-        </motion.div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-        <div className="rounded-3xl border border-border bg-card p-4">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-muted">
-                Target Formats
-              </p>
-              <p className="text-sm text-secondary">
-                Pick a destination to generate code automatically.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="rounded-full border border-border bg-section px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent transition hover:border-accent hover:text-accent"
-            >
-              {copied ? "Copied" : "Copy output"}
-            </button>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {TRANSFORM_TARGETS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => setTarget(option.id)}
-                className={cn(
-                  "rounded-2xl border px-4 py-3 text-left transition",
-                  target === option.id
-                    ? "border-accent bg-accent-soft shadow-[0_0_20px_rgba(34,211,238,0.2)]"
-                    : "border-border bg-card hover:border-border"
-                )}
-              >
-                <p className="text-sm font-semibold text-text">
-                  {option.id}
-                </p>
-                <p className="text-xs text-muted">{option.description}</p>
-              </button>
+            {TARGET_OPTIONS.map((option) => (
+              <option key={option} value={option}>{option}</option>
             ))}
-          </div>
+          </select>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+          >
+            {copied ? "Copied" : "Copy"}
+          </button>
         </div>
-        <motion.div
-          className="rounded-3xl border border-border bg-card p-5"
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <p className="text-xs uppercase tracking-[0.3em] text-muted">
-            Transform Insights
-          </p>
-          <div className="mt-4 space-y-4 text-sm text-secondary">
-            <div className="flex items-center justify-between rounded-2xl border border-border bg-section px-4 py-3">
-              <span>Input size</span>
-              <span className="text-text">{input.length} chars</span>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl border border-border bg-section px-4 py-3">
-              <span>Status</span>
-              <span
-                className={cn(
-                  "font-semibold",
-                  result.status === "valid" ? "text-accent" : "text-error"
-                )}
-              >
-                {result.status === "valid" ? "Ready" : "Needs fixes"}
-              </span>
-            </div>
-            <div className="rounded-2xl border border-border bg-section px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.3em] text-muted">
-                Tip
-              </p>
-              <p className="text-sm text-secondary">
-                Use command palette to jump between editor, tools, and transforms.
-              </p>
-            </div>
-          </div>
-        </motion.div>
       </div>
 
-      <div className="rounded-3xl border border-border bg-card p-4">
-        <div className="mb-4 flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-muted">
-          <span>Workspace</span>
-          <span>{target} output</span>
+      <motion.div className="min-h-0 flex-1 rounded-2xl border border-slate-800 bg-slate-900/50 p-3 shadow-sm" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+        <div className="mb-3 flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-300">
+          <span>JSON Editor</span>
+          <span className={cn(result.status === "valid" ? "text-blue-300" : "text-red-300")}>
+            {result.status === "valid" ? result.message : "Invalid JSON"}
+          </span>
         </div>
-        <div className="h-[520px] rounded-3xl border border-border bg-card p-3">
+        <div className="h-[560px] overflow-hidden rounded-xl border border-slate-800 bg-[#0b1220]">
           <ResizableSplit
-            initialRatio={0.55}
+            initialRatio={0.5}
             left={
-              <div className="flex h-full flex-col gap-3 pr-2">
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-muted">
-                  <span>JSON input</span>
-                  <span className="text-accent">Paste payloads</span>
-                </div>
-                <div className="h-full">
-                  <MonacoEditor theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"} value={input} onChange={setInput} />
+              <div className="flex h-full flex-col gap-2 pr-2">
+                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-300">JSON Editor</div>
+                <div className="h-full overflow-hidden rounded-lg border border-slate-800 bg-[#0b1220]">
+                  <MonacoEditor
+                    theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
+                    value={input}
+                    onChange={setInput}
+                    options={{ minimap: { enabled: false }, fontSize: 16, lineHeight: 22, automaticLayout: true, scrollBeyondLastLine: false }}
+                  />
                 </div>
               </div>
             }
             right={
-              <div className="flex h-full flex-col gap-3 pl-2">
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-muted">
-                  <span>Generated output</span>
-                  <span
-                    className={cn(
-                      "text-accent",
-                      result.status !== "valid" && "text-error"
-                    )}
-                  >
-                    {result.status === "valid" ? "Ready" : "Error"}
-                  </span>
-                </div>
-                <div className="h-full overflow-hidden rounded-2xl border border-border bg-card">
-                  <pre className="h-full overflow-auto p-4 text-sm text-secondary">
+              <div className="flex h-full flex-col gap-2 pl-2">
+                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-300">Output Preview</div>
+                <div className="h-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950/70">
+                  <pre className="h-full overflow-auto p-4 text-sm text-slate-100">
                     {result.output || "Paste JSON to generate output."}
                   </pre>
                 </div>
@@ -206,7 +111,7 @@ export function TransformPage() {
             }
           />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -26,14 +26,14 @@ export function PlatformHighlights() {
       {highlights.map((highlight, index) => (
         <motion.article
           key={highlight.title}
-          className="premium-card rounded-3xl p-6"
+          className="rounded-3xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-md"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ y: -2 }}
           transition={{ duration: 0.35, delay: index * 0.08 }}
         >
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{highlight.title}</h3>
-          <p className="mt-3 text-sm text-slate-700 dark:text-slate-300">{highlight.description}</p>
+          <h3 className="text-lg font-semibold text-slate-100">{highlight.title}</h3>
+          <p className="mt-3 text-sm text-slate-300">{highlight.description}</p>
         </motion.article>
       ))}
     </section>

@@ -45,7 +45,7 @@ export function EditorToolbar({ onFormat, onMinify, onPaste, onClear, onCopy, on
   const pathname = usePathname();
 
   return (
-    <div className="flex w-full items-center justify-between gap-3">
+    <div className="flex w-full items-center justify-between gap-4">
       <div className="flex min-w-0 flex-wrap items-center gap-2 md:flex-nowrap">
         <ToolbarButton label="Format" onClick={onFormat} shortcut="Ctrl⇧F" variant="primary" />
         <ToolbarButton label="Minify" onClick={onMinify} shortcut="Ctrl⇧M" />

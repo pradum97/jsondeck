@@ -31,6 +31,8 @@ const subscriptionSchema = new Schema<SubscriptionDocument>(
 );
 
 subscriptionSchema.index({ userId: 1, status: 1 });
+subscriptionSchema.index({ createdAt: -1, status: 1 });
+subscriptionSchema.index({ planCode: 1, interval: 1, status: 1 });
 
 const SubscriptionModel: Model<SubscriptionDocument> =
   mongoose.models.Subscription || mongoose.model<SubscriptionDocument>("Subscription", subscriptionSchema);

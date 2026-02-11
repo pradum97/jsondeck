@@ -20,6 +20,7 @@ const projectSchema = new Schema<ProjectDocument>(
 );
 
 projectSchema.index({ workspaceId: 1, name: 1 });
+projectSchema.index({ createdAt: -1 });
 
 const ProjectModel: Model<ProjectDocument> =
   mongoose.models.Project || mongoose.model<ProjectDocument>("Project", projectSchema);

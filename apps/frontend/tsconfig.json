@@ -11,6 +11,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "recharts": [
+        "./src/lib/recharts-compat"
       ]
     },
     "esModuleInterop": true

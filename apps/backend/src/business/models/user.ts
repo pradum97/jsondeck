@@ -22,6 +22,7 @@ const userSchema = new Schema<UserDocument>(
 );
 
 userSchema.index({ email: 1 });
+userSchema.index({ createdAt: -1 });
 
 const UserModel: Model<UserDocument> =
   mongoose.models.User || mongoose.model<UserDocument>("User", userSchema);

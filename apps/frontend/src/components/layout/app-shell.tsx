@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { Navbar } from "@/components/layout/navbar";
 import { FirstVisitModal } from "@/components/layout/first-visit-modal";
@@ -10,6 +10,11 @@ import { useTheme } from "next-themes";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -19,7 +24,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const isLightTheme = resolvedTheme === "light";
+  const isLightTheme = mounted && resolvedTheme === "light";
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-bg text-text">

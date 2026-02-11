@@ -207,6 +207,12 @@ export function EditorPage() {
     return parseJsonError(activeTab.content);
   }, [activeTab.content]);
 
+  useEffect(() => {
+    if (activeTab.content.trim() === "") {
+      setDiagnostics({ status: "idle", message: "Ready to validate." });
+    }
+  }, [activeTab.content, setDiagnostics]);
+
   const jumpToError = useCallback(() => {
     if (!parseError || !editorInstance) return;
     editorInstance.revealPositionInCenter({ lineNumber: parseError.line, column: parseError.column });

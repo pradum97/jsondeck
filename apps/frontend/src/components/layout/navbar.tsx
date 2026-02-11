@@ -81,7 +81,7 @@ export function Navbar() {
                       ? "border-blue-200 bg-blue-50 font-semibold text-blue-600"
                       : "border-blue-500/70 bg-blue-500/20 font-semibold text-slate-100 shadow-sm"
                     : isLightTheme
-                      ? "border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+                      ? "border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                       : "border-slate-800 bg-slate-900/60 font-medium text-slate-300 hover:bg-slate-800 hover:text-slate-100"
                 }`}
               >
@@ -102,8 +102,8 @@ export function Navbar() {
       <div className="order-2 flex items-center gap-2 sm:order-3">
         {!isLoggedIn ? (
           <div className="flex items-center gap-2 text-xs">
-            <Link href="/login" className={`rounded-lg border px-3 py-1.5 ${isLightTheme ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900" : "border-slate-800 bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-slate-100"}`}>Login</Link>
-            <Link href="/signup" className={`rounded-lg border px-3 py-1.5 ${isLightTheme ? "border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100" : "border-blue-500/70 bg-blue-500/20 text-slate-100 hover:bg-blue-500/30"}`}>Sign Up</Link>
+            <Link href="/login" className={`rounded-lg border px-3 py-1.5 ${isLightTheme ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900" : "border-slate-800 bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-slate-100"}`}>Login</Link>
+            <Link href="/signup" className={`rounded-lg border px-3 py-1.5 ${isLightTheme ? "border-blue-600 bg-blue-600 text-white hover:bg-blue-700" : "border-blue-500/70 bg-blue-500/20 text-slate-100 hover:bg-blue-500/30"}`}>Sign Up</Link>
           </div>
         ) : (
           <div className="relative">
@@ -115,10 +115,10 @@ export function Navbar() {
               JD
             </button>
             {openMenu ? (
-              <div className={`absolute right-0 top-10 z-50 min-w-36 rounded-lg border p-1 text-xs shadow-sm backdrop-blur ${isLightTheme ? "border-slate-200 bg-white text-slate-700" : "border-slate-800 bg-slate-900/95 text-slate-300"}`}>
-                <Link href="/settings" onClick={() => setOpenMenu(false)} className={`block rounded-md px-3 py-2 ${isLightTheme ? "hover:bg-slate-100 hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Profile</Link>
-                <Link href="/settings" onClick={() => setOpenMenu(false)} className={`block rounded-md px-3 py-2 ${isLightTheme ? "hover:bg-slate-100 hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Billing</Link>
-                <button type="button" onClick={handleLogout} className={`block w-full rounded-md px-3 py-2 text-left ${isLightTheme ? "hover:bg-slate-100 hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Logout</button>
+              <div className={`absolute right-0 top-10 z-50 min-w-36 rounded-lg border p-1 text-xs shadow-sm backdrop-blur ${isLightTheme ? "border-slate-200 bg-white text-slate-600" : "border-slate-800 bg-slate-900/95 text-slate-300"}`}>
+                <Link href="/settings" onClick={() => setOpenMenu(false)} className={`block rounded-md px-3 py-2 ${isLightTheme ? "hover:bg-slate-50 hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Profile</Link>
+                <Link href="/settings" onClick={() => setOpenMenu(false)} className={`block rounded-md px-3 py-2 ${isLightTheme ? "hover:bg-slate-50 hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Billing</Link>
+                <button type="button" onClick={handleLogout} className={`block w-full rounded-md px-3 py-2 text-left ${isLightTheme ? "hover:bg-slate-50 hover:text-slate-900" : "hover:bg-slate-800 hover:text-slate-100"}`}>Logout</button>
               </div>
             ) : null}
           </div>
@@ -129,7 +129,7 @@ export function Navbar() {
           variant="ghost"
           size="sm"
           onClick={handleToggle}
-          className={`inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs ${isLightTheme ? "border-slate-200 bg-white text-slate-700" : "border-slate-800 bg-slate-900/60 text-slate-300"}`}
+          className={`inline-flex h-8 items-center gap-2 rounded-full border px-3 text-xs ${isLightTheme ? "border-slate-200 bg-white text-slate-600" : "border-slate-800 bg-slate-900/60 text-slate-300"}`}
         >
           <span aria-hidden="true">{isLightTheme ? "🌙" : "☀"}</span>
           <span>{isLightTheme ? "Dark" : "Light"}</span>

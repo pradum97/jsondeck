@@ -38,18 +38,18 @@ export function JsonDiffTool() {
             value={left}
             onChange={(event) => setLeft(event.target.value)}
             placeholder="Left JSON"
-            className="min-h-[140px] w-full rounded-2xl border border-slate-800/70 bg-slate-950/80 p-4 text-sm text-slate-200 placeholder:text-slate-500"
+            className="min-h-[140px] w-full rounded-2xl border border-slate-300 bg-white dark:border-slate-800/70 dark:bg-slate-950/80 p-4 text-sm text-slate-900 placeholder:text-slate-500 dark:text-slate-200"
           />
           <textarea
             value={right}
             onChange={(event) => setRight(event.target.value)}
             placeholder="Right JSON"
-            className="min-h-[140px] w-full rounded-2xl border border-slate-800/70 bg-slate-950/80 p-4 text-sm text-slate-200 placeholder:text-slate-500"
+            className="min-h-[140px] w-full rounded-2xl border border-slate-300 bg-white dark:border-slate-800/70 dark:bg-slate-950/80 p-4 text-sm text-slate-900 placeholder:text-slate-500 dark:text-slate-200"
           />
         </div>
-        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/60 p-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800/70 dark:bg-slate-900/60">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Diff</p>
-          <div className="mt-2 max-h-48 overflow-auto text-xs text-slate-200">
+          <div className="mt-2 max-h-48 overflow-auto text-xs text-slate-900 dark:text-slate-200">
             {diff.length === 0 ? (
               <span className="text-slate-500">Paste JSON to compare.</span>
             ) : (
@@ -58,10 +58,10 @@ export function JsonDiffTool() {
                   key={`${line.type}-${index}`}
                   className={
                     line.type === "added"
-                      ? "text-emerald-300"
+                      ? "text-emerald-600 dark:text-emerald-300"
                       : line.type === "removed"
-                      ? "text-rose-300"
-                      : "text-slate-400"
+                      ? "text-rose-600 dark:text-rose-300"
+                      : "text-slate-500 dark:text-slate-400"
                   }
                 >
                   {line.type === "added" ? "+" : line.type === "removed" ? "-" : " "}
@@ -71,9 +71,9 @@ export function JsonDiffTool() {
             )}
           </div>
         </div>
-        <div className="rounded-2xl border border-slate-800/70 bg-slate-900/60 p-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800/70 dark:bg-slate-900/60">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Merged</p>
-          <pre className="mt-2 max-h-48 overflow-auto text-xs text-slate-200">{merged}</pre>
+          <pre className="mt-2 max-h-48 overflow-auto text-xs text-slate-900 dark:text-slate-200">{merged}</pre>
         </div>
       </div>
     </ToolCard>

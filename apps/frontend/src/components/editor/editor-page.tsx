@@ -30,7 +30,7 @@ type JsonErrorLocation = {
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-xs text-[color:var(--muted)]">
+    <div className="flex h-full items-center justify-center rounded-xl border border-border bg-card text-xs text-[color:var(--muted)]">
       Loading editor...
     </div>
   ),
@@ -221,8 +221,8 @@ export function EditorPage() {
   }, [editorInstance, parseError]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-2">
+    <div className="flex min-h-[calc(100vh-var(--navbar-height)-3.25rem)] flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-border bg-card p-2">
         <div className="flex items-center gap-2 overflow-x-auto pb-3">
           <EditorTabs onAddTab={handleNewTab} />
         </div>
@@ -248,7 +248,7 @@ export function EditorPage() {
         </div>
 
         <div className="relative min-h-0 flex-1 pt-3">
-          <div className={cn("absolute inset-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)]", isViewerMode ? "hidden" : "block")}>
+          <div className={cn("absolute inset-0 rounded-xl border border-border bg-card", isViewerMode ? "hidden" : "block")}>
             <MonacoEditor
               height="100%"
               width="100%"
@@ -272,7 +272,7 @@ export function EditorPage() {
               onChange={(nextValue) => updateTabContent(activeTab.id, nextValue ?? "")}
               options={{
                 minimap: { enabled: false },
-                fontSize: 17,
+                fontSize: 14,
                 lineHeight: 24,
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
@@ -291,17 +291,17 @@ export function EditorPage() {
 
       <AnimatePresence>
         {showLoadModal ? (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-[color:var(--bg)]/80 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <motion.div initial={{ y: 18, opacity: 0, scale: 0.98 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 12, opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full max-w-lg rounded-2xl border border-border bg-card p-5">
               <h2 className="text-base font-semibold text-text">Load JSON from API URL</h2>
               <input
                 value={apiUrl}
                 onChange={(event) => setApiUrl(event.target.value)}
                 placeholder="https://api.example.com/data"
-                className="mt-3 h-10 w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-3 text-sm text-[color:var(--text)]"
+                className="mt-3 h-10 w-full rounded-lg border border-border bg-card px-3 text-sm text-[color:var(--text)]"
               />
               <div className="mt-4 flex justify-end gap-2">
-                <button type="button" onClick={() => setShowLoadModal(false)} className="h-9 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--muted)]">Cancel</button>
+                <button type="button" onClick={() => setShowLoadModal(false)} className="h-9 rounded-lg border border-border bg-card px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--muted)]">Cancel</button>
                 <button type="button" onClick={() => void handleLoadJson()} className="h-9 rounded-lg bg-[color:var(--accent)] px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--surface)] hover:bg-[color:var(--accent-hover)]">Load</button>
               </div>
             </motion.div>

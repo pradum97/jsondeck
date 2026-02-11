@@ -1,11 +1,11 @@
 import dynamic from "next/dynamic";
 
-const EditorPage = dynamic(
-  () => import("@/components/editor/editor-page").then((mod) => mod.EditorPage),
+const ViewerPage = dynamic(
+  () => import("@/components/editor/viewer-page").then((mod) => mod.ViewerPage),
   {
     ssr: false,
     loading: () => (
-      <div className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-[color:var(--muted)]">
+      <div className="rounded-xl border border-border bg-card p-6 text-muted-foreground">
         Loading viewer workspace...
       </div>
     ),
@@ -13,5 +13,5 @@ const EditorPage = dynamic(
 );
 
 export default function ViewerRoute() {
-  return <EditorPage />;
+  return <ViewerPage />;
 }

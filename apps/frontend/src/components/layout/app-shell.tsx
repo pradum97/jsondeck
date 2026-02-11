@@ -15,10 +15,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[color:var(--bg)] text-[color:var(--text)]">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen flex-col">
         <Navbar />
-        <main className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col px-2 pb-3 pt-2 sm:px-4">
+        <main className="mx-auto flex w-full max-w-7xl min-h-[calc(100vh-var(--navbar-height))] flex-1 flex-col px-2 py-3 sm:px-4">
           {children}
         </main>
         <Footer />

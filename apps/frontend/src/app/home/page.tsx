@@ -5,7 +5,7 @@ import { PremiumFeatureShowcase } from "@/components/landing/premium-feature-sho
 
 export default function HomeMarketingPage() {
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-2 py-2 sm:px-4">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 py-3 sm:py-4">
       <LandingHero />
       <PremiumFeatureShowcase />
       <PlatformHighlights />

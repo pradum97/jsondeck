@@ -34,6 +34,7 @@ const apiRequestSchema = new Schema<ApiRequestDocument>(
 );
 
 apiRequestSchema.index({ collectionId: 1, name: 1 });
+apiRequestSchema.index({ createdAt: -1, method: 1 });
 
 const ApiRequestModel: Model<ApiRequestDocument> =
   mongoose.models.ApiRequest || mongoose.model<ApiRequestDocument>("ApiRequest", apiRequestSchema);

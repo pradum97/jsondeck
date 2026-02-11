@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
+import { analyticsRouter } from "./routes/analytics";
 import { authRouter } from "./routes/auth";
 import { billingRouter } from "./routes/billing";
 import { configRouter } from "./routes/config";
@@ -81,6 +82,7 @@ export const createApp = (): express.Express => {
   });
 
   app.use("/api/auth", authRouter);
+  app.use("/api", analyticsRouter);
   app.use("/api/projects", projectsRouter);
   app.use("/api/documents", documentsRouter);
   app.use("/api/config", configRouter);

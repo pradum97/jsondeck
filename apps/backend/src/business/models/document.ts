@@ -20,6 +20,7 @@ const documentSchema = new Schema<DocumentDocument>(
 );
 
 documentSchema.index({ projectId: 1, updatedAt: -1 });
+documentSchema.index({ createdAt: -1 });
 
 const DocumentModel: Model<DocumentDocument> =
   mongoose.models.Document || mongoose.model<DocumentDocument>("Document", documentSchema);

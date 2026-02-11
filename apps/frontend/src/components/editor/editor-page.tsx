@@ -12,15 +12,11 @@ import { requestTransform, type TransformOperation } from "@/lib/transform-servi
 import { useEditorStore } from "@/store/editor-store";
 import { EditorTabs } from "@/components/editor/editor-tabs";
 import { EditorToolbar } from "@/components/editor/editor-toolbar";
-import { EditorOutput } from "@/components/editor/editor-output";
-import { cn } from "@/lib/utils";
 import { useJsonWorker } from "@/hooks/useJson-worker";
-import type { JsonDiagnostic, JsonDiagnosticStatus, JsonTransformResult } from "@/lib/json-tools";
+import type { JsonDiagnostic, JsonDiagnosticStatus } from "@/lib/json-tools";
 
 const STORAGE_KEY = "jsondeck.editor.tabs.v1";
 const REMOTE_TRANSFORM_THRESHOLD = 1200;
-
-type WorkspaceView = "editor" | "viewer";
 
 type JsonErrorLocation = {
   message: string;
@@ -88,29 +84,12 @@ export function EditorPage() {
   const [lastSavedLabel, setLastSavedLabel] = useState("Autosave idle");
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [apiUrl, setApiUrl] = useState("");
-  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("editor");
   const [editorInstance, setEditorInstance] = useState<editor.IStandaloneCodeEditor | null>(null);
   const { format, minify } = useJsonWorker();
-  const [formattedPreview, setFormattedPreview] = useState<JsonTransformResult>({
-    value: activeTab.content,
-    diagnostic: { status: "idle", message: "Formatting preview loading..." },
-  });
 
   const transformMutation = useMutation({
     mutationFn: async (payload: { input: string; operation: TransformOperation }) => requestTransform(payload.input, payload.operation),
   });
-
-  useEffect(() => {
-    let cancelled = false;
-    const runPreview = async () => {
-      const nextFormatted = await format(activeTab.content);
-      if (!cancelled) setFormattedPreview(nextFormatted);
-    };
-    runPreview();
-    return () => {
-      cancelled = true;
-    };
-  }, [activeTab.content, format]);
 
   const runLocalTransform = useCallback(async (operation: TransformOperation) => {
     const result = operation === "minify" ? await minify(activeTab.content) : await format(activeTab.content);
@@ -232,78 +211,53 @@ export function EditorPage() {
   }, [editorInstance, parseError]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-2">
-      <div className="rounded-2xl border border-slate-700/70 bg-slate-950/60 p-2 shadow-[0_0_0_1px_rgba(56,189,248,0.08),0_12px_40px_rgba(2,6,23,0.45)] backdrop-blur">
-        <div className="mb-1.5 flex items-center justify-between gap-2">
-          <EditorTabs onAddTab={handleNewTab} />
-          <div className="flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-900/70 p-1">
-            {(["editor", "viewer"] as const).map((tab) => (
-              <motion.button
-                key={tab}
-                type="button"
-                whileHover={{ y: -1 }}
-                onClick={() => setWorkspaceView(tab)}
-                className={cn("h-7 rounded-md px-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] transition", workspaceView === tab ? "bg-cyan-500/25 text-cyan-100" : "text-slate-300 hover:text-slate-100")}
-              >
-                {tab}
-              </motion.button>
-            ))}
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-700/70 bg-slate-950/60 p-2 shadow-[0_0_0_1px_rgba(56,189,248,0.08),0_12px_40px_rgba(2,6,23,0.45)] backdrop-blur">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <EditorTabs onAddTab={handleNewTab} />
+          </div>
+          <div className="ml-auto flex min-w-0 justify-end">
+            <EditorToolbar onFormat={handleFormat} onMinify={handleMinify} onPaste={() => void handlePaste()} onClear={handleClear} onCopy={() => void handleCopy()} onStringify={handleStringify} onLoadJson={() => setShowLoadModal(true)} />
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2">
-          <EditorToolbar onFormat={handleFormat} onMinify={handleMinify} onPaste={() => void handlePaste()} onClear={handleClear} onCopy={() => void handleCopy()} onStringify={handleStringify} onLoadJson={() => setShowLoadModal(true)} />
-          <p className="hidden truncate text-[10px] uppercase tracking-[0.2em] text-slate-400 lg:block">{activeTab.name} · {stats.lines} lines · {stats.characters} chars · {lastSavedLabel}</p>
+        <p className="mt-1 hidden truncate text-[10px] uppercase tracking-[0.2em] text-slate-400 lg:block">{activeTab.name} · {stats.lines} lines · {stats.characters} chars · {lastSavedLabel}</p>
+
+        {parseError ? (
+          <motion.button
+            type="button"
+            onClick={jumpToError}
+            initial={{ y: -14, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -14, opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="mt-2 rounded-lg border border-rose-500/70 bg-rose-500/15 px-3 py-1.5 text-left text-xs text-rose-100"
+          >
+            Invalid JSON at line {parseError.line} column {parseError.column} — {parseError.message}
+          </motion.button>
+        ) : null}
+
+        <div className="mt-2 min-h-0 flex-1 overflow-hidden rounded-xl border border-cyan-500/20 bg-slate-950/45 shadow-[0_0_0_1px_rgba(34,211,238,0.07),0_18px_48px_rgba(2,6,23,0.45)]">
+          <MonacoEditor
+            height="100%"
+            defaultLanguage="json"
+            theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
+            value={activeTab.content}
+            onMount={(instance) => setEditorInstance(instance)}
+            onChange={(nextValue) => updateTabContent(activeTab.id, nextValue ?? "")}
+            options={{
+              minimap: { enabled: false },
+              fontSize: 13,
+              lineHeight: 20,
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              smoothScrolling: true,
+              cursorBlinking: "smooth",
+              padding: { top: 10, bottom: 10 },
+            }}
+          />
         </div>
-      </div>
-
-      <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-cyan-500/20 bg-slate-950/45 p-2 shadow-[0_0_0_1px_rgba(34,211,238,0.07),0_18px_48px_rgba(2,6,23,0.45)]">
-        <AnimatePresence mode="wait" initial={false}>
-          {workspaceView === "editor" ? (
-            <motion.div key="editor" initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 8 }} transition={{ duration: 0.2 }} className="flex h-full min-w-0 flex-col gap-2">
-              <AnimatePresence initial={false}>
-                {parseError ? (
-                  <motion.button
-                    type="button"
-                    onClick={jumpToError}
-                    initial={{ y: -14, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -14, opacity: 0 }}
-                    transition={{ duration: 0.18 }}
-                    className="sticky top-0 z-20 rounded-lg border border-rose-500/70 bg-rose-500/15 px-3 py-1.5 text-left text-xs text-rose-100"
-                  >
-                    Invalid JSON at line {parseError.line} column {parseError.column} — {parseError.message}
-                  </motion.button>
-                ) : null}
-              </AnimatePresence>
-
-              <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-700/70">
-                <MonacoEditor
-                  height="100%"
-                  defaultLanguage="json"
-                  theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
-                  value={activeTab.content}
-                  onMount={(instance) => setEditorInstance(instance)}
-                  onChange={(nextValue) => updateTabContent(activeTab.id, nextValue ?? "")}
-                  options={{
-                    minimap: { enabled: false },
-                    fontSize: 13,
-                    lineHeight: 20,
-                    scrollBeyondLastLine: false,
-                    automaticLayout: true,
-                    smoothScrolling: true,
-                    cursorBlinking: "smooth",
-                    padding: { top: 10, bottom: 10 },
-                  }}
-                />
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div key="viewer" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }} className="h-full min-w-0">
-              <EditorOutput formatted={formattedPreview.value} />
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       <AnimatePresence>

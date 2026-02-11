@@ -23,14 +23,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Navbar />
         <motion.section
           className={cn(
-            "glass relative mx-2 mb-2 mt-1 flex-1 rounded-2xl border border-slate-800/65 p-2 shadow-2xl sm:mx-3 sm:mb-3 sm:p-3",
+            "glass relative mx-2 mb-2 mt-1 flex flex-1 min-h-0 flex-col rounded-2xl border border-slate-800/65 p-2 shadow-2xl sm:mx-3 sm:mb-3 sm:p-3",
             "before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-slate-900/45 before:to-slate-950/25 before:content-['']"
           )}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <div className="relative z-10 h-full">{children}</div>
+          <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col">{children}</div>
         </motion.section>
       </div>
       <FirstVisitModal />

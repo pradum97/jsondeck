@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -12,7 +13,9 @@ import { requestTransform, type TransformOperation } from "@/lib/transform-servi
 import { useEditorStore } from "@/store/editor-store";
 import { EditorTabs } from "@/components/editor/editor-tabs";
 import { EditorToolbar } from "@/components/editor/editor-toolbar";
+import { EditorOutput } from "@/components/editor/editor-output";
 import { useJsonWorker } from "@/hooks/useJson-worker";
+import { cn } from "@/lib/utils";
 import type { JsonDiagnostic, JsonDiagnosticStatus } from "@/lib/json-tools";
 
 const STORAGE_KEY = "jsondeck.editor.tabs.v1";
@@ -78,6 +81,7 @@ function parseJsonError(input: string): JsonErrorLocation | null {
 }
 
 export function EditorPage() {
+  const pathname = usePathname();
   const { resolvedTheme } = useTheme();
   const { tabs, activeTabId, updateTabContent, addTab, setDiagnostics, setOutput, addHistory, hydrate, markSaved } = useEditorStore();
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? tabs[0];
@@ -85,6 +89,7 @@ export function EditorPage() {
   const [apiUrl, setApiUrl] = useState("");
   const [editorInstance, setEditorInstance] = useState<editor.IStandaloneCodeEditor | null>(null);
   const { format, minify } = useJsonWorker();
+  const isViewerMode = pathname?.startsWith("/viewer") ?? false;
 
   const transformMutation = useMutation({
     mutationFn: async (payload: { input: string; operation: TransformOperation }) => requestTransform(payload.input, payload.operation),
@@ -208,17 +213,17 @@ export function EditorPage() {
   }, [editorInstance, parseError]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div className="flex h-full min-h-0 flex-1 flex-col rounded-2xl border border-slate-700/70 bg-slate-950/60 p-2 shadow-[0_0_0_1px_rgba(56,189,248,0.08),0_12px_40px_rgba(2,6,23,0.45)] backdrop-blur">
-        <div className="flex items-center gap-2 overflow-x-auto">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-700/70 bg-slate-950/60 p-2 shadow-[0_0_0_1px_rgba(56,189,248,0.08),0_12px_40px_rgba(2,6,23,0.45)] backdrop-blur">
+        <div className="flex items-center gap-2 overflow-x-auto pb-3">
           <EditorTabs onAddTab={handleNewTab} />
         </div>
 
-        <div className="mt-2">
+        <div className="pt-3">
           <EditorToolbar onFormat={handleFormat} onMinify={handleMinify} onPaste={() => void handlePaste()} onClear={handleClear} onCopy={() => void handleCopy()} onStringify={handleStringify} onLoadJson={() => setShowLoadModal(true)} />
         </div>
 
-        <div className="mt-2">
+        <div className="pt-3">
           {parseError ? (
             <motion.button
               type="button"
@@ -234,25 +239,32 @@ export function EditorPage() {
           ) : null}
         </div>
 
-        <div className="mt-2 min-h-0 flex-1 rounded-xl border border-cyan-500/20 bg-slate-950/45 shadow-[0_0_0_1px_rgba(34,211,238,0.07),0_18px_48px_rgba(2,6,23,0.45)]">
-          <MonacoEditor
-            height="100%"
-            defaultLanguage="json"
-            theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
-            value={activeTab.content}
-            onMount={(instance) => setEditorInstance(instance)}
-            onChange={(nextValue) => updateTabContent(activeTab.id, nextValue ?? "")}
-            options={{
-              minimap: { enabled: false },
-              fontSize: 13,
-              lineHeight: 20,
-              scrollBeyondLastLine: false,
-              automaticLayout: true,
-              smoothScrolling: true,
-              cursorBlinking: "smooth",
-              padding: { top: 10, bottom: 10 },
-            }}
-          />
+        <div className="relative flex-1 min-h-0 pt-3">
+          <div className={cn("absolute inset-0 rounded-xl border border-cyan-500/20 bg-slate-950/45 shadow-[0_0_0_1px_rgba(34,211,238,0.07),0_18px_48px_rgba(2,6,23,0.45)]", isViewerMode ? "hidden" : "block")}>
+            <MonacoEditor
+              height="100%"
+              width="100%"
+              defaultLanguage="json"
+              theme={resolvedTheme === "light" ? "vs" : "vs-dark"}
+              value={activeTab.content}
+              onMount={(instance) => setEditorInstance(instance)}
+              onChange={(nextValue) => updateTabContent(activeTab.id, nextValue ?? "")}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 13,
+                lineHeight: 20,
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                smoothScrolling: true,
+                cursorBlinking: "smooth",
+                padding: { top: 10, bottom: 10 },
+              }}
+            />
+          </div>
+
+          <div className={cn("absolute inset-0", isViewerMode ? "block" : "hidden")}>
+            <EditorOutput formatted={activeTab.content} />
+          </div>
         </div>
       </div>
 

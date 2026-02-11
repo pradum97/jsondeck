@@ -51,16 +51,16 @@ export function TransformPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:backdrop-blur-md">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-300">Transform Studio</p>
-          <h1 className="text-2xl font-semibold text-slate-100">JSON Transform</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500 dark:text-slate-300">Transform Studio</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">JSON Transform</h1>
         </div>
         <div className="flex items-center gap-2">
           <select
             value={target}
             onChange={(event) => setTarget(event.target.value as TransformTarget)}
-            className="h-10 rounded-lg border border-slate-800 bg-slate-900 px-3 text-sm text-slate-100"
+            className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
           >
             {TARGET_OPTIONS.map((option) => (
               <option key={option} value={option}>{option}</option>
@@ -69,27 +69,27 @@ export function TransformPage() {
           <button
             type="button"
             onClick={handleCopy}
-            className="rounded-lg border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+            className="rounded-lg border border-blue-600 bg-blue-600 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white hover:bg-blue-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
           >
             {copied ? "Copied" : "Copy"}
           </button>
         </div>
       </div>
 
-      <motion.div className="min-h-0 flex-1 rounded-2xl border border-slate-800 bg-slate-900/50 p-3 shadow-sm" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-        <div className="mb-3 flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-300">
+      <motion.div className="min-h-0 flex-1 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/50" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+        <div className="mb-3 flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">
           <span>JSON Editor</span>
-          <span className={cn(result.status === "valid" ? "text-blue-300" : "text-red-300")}>
+          <span className={cn(result.status === "valid" ? "text-blue-600 dark:text-blue-300" : "text-red-600 dark:text-red-300")}>
             {result.status === "valid" ? result.message : "Invalid JSON"}
           </span>
         </div>
-        <div className="h-[560px] overflow-hidden rounded-xl border border-slate-800 bg-[#0b1220]">
+        <div className="h-[560px] overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
           <ResizableSplit
             initialRatio={0.5}
             left={
               <div className="flex h-full flex-col gap-2 pr-2">
-                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-300">JSON Editor</div>
-                <div className="h-full overflow-hidden rounded-lg border border-slate-800 bg-[#0b1220]">
+                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">JSON Editor</div>
+                <div className="h-full overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
                   <MonacoEditor
                     theme={resolvedTheme === "light" ? "vs-light" : "vs-dark"}
                     value={input}
@@ -101,9 +101,9 @@ export function TransformPage() {
             }
             right={
               <div className="flex h-full flex-col gap-2 pl-2">
-                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-300">Output Preview</div>
-                <div className="h-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950/70">
-                  <pre className="h-full overflow-auto p-4 text-sm text-slate-100">
+                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">Output Preview</div>
+                <div className="h-full overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950/70">
+                  <pre className="h-full overflow-auto p-4 text-sm text-slate-900 dark:text-slate-100">
                     {result.output || "Paste JSON to generate output."}
                   </pre>
                 </div>

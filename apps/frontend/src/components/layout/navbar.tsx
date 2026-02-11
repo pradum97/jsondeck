@@ -49,6 +49,10 @@ export function Navbar() {
 
   const isLightTheme = mounted && resolvedTheme === "light";
 
+  if (!mounted) {
+    return <nav className="sticky top-2 z-40 mx-2 mt-2 h-[52px] rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm sm:mx-3 sm:px-4 sm:py-2.5" />;
+  }
+
   return (
     <nav
       className={`sticky top-2 z-40 mx-2 mt-2 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-3 py-2 shadow-sm sm:mx-3 sm:px-4 sm:py-2.5 ${

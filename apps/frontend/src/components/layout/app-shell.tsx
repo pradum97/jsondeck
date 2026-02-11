@@ -6,8 +6,11 @@ import { Navbar } from "@/components/layout/navbar";
 import { FirstVisitModal } from "@/components/layout/first-visit-modal";
 import { Footer } from "@/components/layout/footer";
 import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const { resolvedTheme } = useTheme();
+
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
 
@@ -16,13 +19,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const isLightTheme = resolvedTheme === "light";
+
   return (
     <div className="relative min-h-screen overflow-x-clip bg-bg text-text">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_color-mix(in_srgb,var(--accent)_9%,transparent),_transparent_52%)]" />
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
         <motion.section
-          className="glass relative mx-2 mb-2 mt-1 flex min-h-0 flex-1 flex-col rounded-xl border border-slate-200 bg-section p-2 shadow-sm dark:border-slate-800 sm:mx-3 sm:mb-3 sm:p-3"
+          className={`relative mx-2 mb-2 mt-1 flex min-h-0 flex-1 flex-col rounded-xl border p-2 shadow-sm sm:mx-3 sm:mb-3 sm:p-3 ${
+            isLightTheme
+              ? "border-slate-200 bg-white"
+              : "glass border-slate-800 bg-section"
+          }`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}

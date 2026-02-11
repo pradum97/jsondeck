@@ -7,7 +7,7 @@
   --bg: #f6f8fb;
   --section: #f1f5f9;
   --card: #ffffff;
-  --border: #e2e8f0;
+  --border: #cbd5e1;
   --text: #0f172a;
   --secondary: #334155;
   --muted: #64748b;
@@ -30,7 +30,7 @@
   --section: #0f172a;
   --card: #111827;
   --border: #1f2937;
-  --text: #f1f5f9;
+  --text: #f8fafc;
   --secondary: #cbd5e1;
   --muted: #64748b;
   --disabled: #94a3b8;
@@ -48,6 +48,7 @@
 
 * {
   box-sizing: border-box;
+  border-color: var(--border);
 }
 
 html,
@@ -115,7 +116,7 @@ input,
 textarea,
 select,
 [role="button"] {
-  @apply transition-colors duration-200;
+  @apply transition-all duration-200;
 }
 
 a {
@@ -128,4 +129,14 @@ a {
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(10px);
+}
+
+.premium-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.premium-card:hover {
+  box-shadow: var(--shadow-md);
 }

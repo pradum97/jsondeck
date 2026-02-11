@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import type { Route } from "next";
-import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
+import type { Route } from "next";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +20,7 @@ const navLinks: Array<{ href: Route; label: string; roles: UserRole[] }> = [
 
 export function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [role, setRole] = useState<UserRole>("guest");
 
@@ -47,16 +49,36 @@ export function Navbar() {
       </Link>
 
       <div className="order-3 flex w-full min-w-0 items-center gap-1 overflow-x-auto pb-1 text-sm text-secondary sm:order-2 sm:w-auto sm:flex-wrap sm:justify-center sm:gap-2 sm:overflow-visible sm:pb-0">
-        {visibleLinks.map((link) => (
-          <motion.div key={link.href} whileHover={{ y: -1 }} transition={{ duration: 0.2 }}>
-            <Link
-              href={link.href}
-              className="block whitespace-nowrap rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-secondary hover:bg-accent-soft hover:text-accent"
+        {visibleLinks.map((link) => {
+          const isActive = pathname === link.href || (link.href === "/home" && pathname === "/");
+
+          return (
+            <motion.div
+              key={link.href}
+              whileHover={{ scale: 1.05, y: -1 }}
+              whileTap={{ scale: 0.98, y: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              {link.label}
-            </Link>
-          </motion.div>
-        ))}
+              <Link
+                href={link.href}
+                className={`relative block cursor-pointer whitespace-nowrap rounded-lg border px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] transition-all duration-200 ${
+                  isActive
+                    ? "border-blue-200 bg-blue-50 font-semibold text-blue-600 shadow-sm"
+                    : "border-border bg-card font-medium text-secondary hover:bg-slate-100 hover:text-slate-900 hover:shadow-md"
+                }`}
+              >
+                {link.label}
+                {isActive ? (
+                  <motion.span
+                    layoutId="active-navbar-indicator"
+                    className="absolute inset-x-2 -bottom-1.5 h-0.5 rounded-full bg-blue-500"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                ) : null}
+              </Link>
+            </motion.div>
+          );
+        })}
       </div>
 
       <Button

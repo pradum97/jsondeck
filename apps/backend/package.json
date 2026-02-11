@@ -7,7 +7,7 @@
     "build": "tsc -p tsconfig.json",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "depcheck": "depcheck --config ../../depcheck.config.cjs || true",
+    "depcheck": "depcheck --config ../../depcheck.config.cjs",
     "test": "vitest run"
   },
   "dependencies": {
@@ -35,6 +35,8 @@
     "@types/nodemailer": "^6.4.14",
     "@types/morgan": "^1.9.9",
     "tsx": "^4.19.2",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "@typescript-eslint/eslint-plugin": "^8.20.0"
   }
 }

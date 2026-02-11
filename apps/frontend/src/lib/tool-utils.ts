@@ -31,17 +31,25 @@ export function base64Decode(value: string): string {
 }
 
 export async function hashText(value: string, algorithm: "SHA-256" | "SHA-384" | "SHA-512") {
+  const webCrypto = globalThis.crypto;
+  if (!webCrypto) {
+    return "";
+  }
   const encoder = new TextEncoder();
-  const buffer = await crypto.subtle.digest(algorithm, encoder.encode(value));
+  const buffer = await webCrypto.subtle.digest(algorithm, encoder.encode(value));
   return bufferToHex(buffer);
 }
 
 export function generateUuid(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
+  const webCrypto = globalThis.crypto;
+  if (!webCrypto) {
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+  if (typeof webCrypto.randomUUID === "function") {
+    return webCrypto.randomUUID();
   }
   const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
+  webCrypto.getRandomValues(bytes);
   bytes[6] = (bytes[6] & 0x0f) | 0x40;
   bytes[8] = (bytes[8] & 0x3f) | 0x80;
   const segments = [

@@ -1,7 +1,7 @@
-import "express-serve-static-core";
+import "express";
 import type { AuthContext } from "../middleware/auth";
 
-declare module "express-serve-static-core" {
+declare module "express" {
   interface Request {
     requestId: string;
     auth?: AuthContext;

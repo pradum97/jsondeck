@@ -11,7 +11,7 @@ interface SubscriptionSummaryProps {
 export function SubscriptionSummary({ planName, renewsOn, seats }: SubscriptionSummaryProps) {
   return (
     <motion.div
-      className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-lg"
+      className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-6 shadow-sm"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}

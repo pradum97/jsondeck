@@ -27,12 +27,12 @@ export function Sidebar() {
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       <div className="flex items-center justify-between">
-        <div className="flex flex-col">
+        <Link href="/home" className="flex flex-col">
           <span className="text-xs uppercase tracking-[0.3em] text-emerald-300/80">
             JSONDeck
           </span>
           <span className="text-sm text-slate-400">{publicEnv.siteLabel}</span>
-        </div>
+        </Link>
         <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-emerald-200">
           Pro
         </span>

@@ -27,7 +27,7 @@ export function ToolsPage() {
           </p>
         </div>
         <motion.div
-          className="rounded-3xl border border-border bg-card px-6 py-4 text-sm text-secondary shadow-lg"
+          className="rounded-3xl border border-border bg-card px-6 py-4 text-sm text-secondary shadow-sm"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
